@@ -67,10 +67,7 @@ Each DGDR requires container images for profiling and deployment:
 
 ```yaml
 spec:
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
+  image: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
 ```
 
 #### Quick Start: Deploy with DGDR
@@ -80,23 +77,23 @@ spec:
 Use a sample configuration or create your own:
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: my-model-profiling
 spec:
   model: "Qwen/Qwen3-0.6B"
   backend: vllm
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
-    config:
-      sla:
-        isl: 3000
-        osl: 150
-        ttft: 200.0
-        itl: 20.0
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
+  image: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
+
+  workload:
+    isl: 3000
+    osl: 150
+
+  sla:
+    ttft: 200.0
+    itl: 20.0
+
   autoApply: true
 ```
 
@@ -120,11 +117,12 @@ kubectl describe dgdr my-model-profiling -n $NAMESPACE
 kubectl logs -f job/profile-my-model-profiling -n $NAMESPACE
 ```
 
-**DGDR Status States:**
+**DGDR Status Phases:**
 - `Pending`: Initial state, preparing to profile
 - `Profiling`: Running profiling job (20-30 seconds for AIC, 2-4 hours for online)
+- `Ready`: Profiling complete, generated DGD spec available in status
 - `Deploying`: Generating and applying DGD configuration
-- `Ready`: DGD successfully deployed and running
+- `Deployed`: DGD successfully deployed and running
 - `Failed`: Error occurred (check events for details)
 
 **Step 4: Access Your Deployment**
@@ -240,39 +238,33 @@ If GPU discovery is unavailable (no permissions or no GPU labels), the profiler 
 
 ### DGDR Configuration Structure
 
-All profiler configuration goes under `spec.profilingConfig.config`:
+All profiler configuration is provided through the v1beta1 DGDR spec fields:
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: my-deployment
 spec:
   model: "Qwen/Qwen3-0.6B"
   backend: vllm
+  image: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
-    configMapRef:                  # Optional: base DGD config
-      name: my-config
-      key: disagg.yaml
-
-    config:
-      sla: { ... }
-      hardware: { ... }
-      sweep: { ... }
-      planner: { ... }
-
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.9.0"
+  workload: { ... }
+  sla: { ... }
+  hardware: { ... }
+  features: { ... }
+  overrides: { ... }
 ```
 
-### SLA Configuration (Required)
+### SLA Configuration (Optional)
 
 ```yaml
-sla:
+workload:
   isl: 3000      # Average input sequence length (tokens)
   osl: 150       # Average output sequence length (tokens)
+
+sla:
   ttft: 200.0    # Target Time To First Token (milliseconds)
   itl: 20.0      # Target Inter-Token Latency (milliseconds)
 ```
@@ -286,16 +278,14 @@ sla:
 
 ```yaml
 hardware:
-  minNumGpusPerEngine: 2      # Auto-determined from model size and VRAM if not provided
-  maxNumGpusPerEngine: 8      # Maximum GPUs to test
-  numGpusPerNode: 8           # GPUs per node (for multi-node MoE)
-  gpuType: h200_sxm           # GPU type hint (informational, auto-detected)
+  gpuSku: h200_sxm            # GPU SKU identifier (auto-detected)
+  vramMb: 81920               # VRAM per GPU in MiB
+  totalGpus: 16               # Total GPUs available in the cluster
+  numGPUsPerNode: 8           # GPUs per node (for multi-node MoE)
 ```
 
-- **minNumGpusPerEngine**: Skip small TP sizes if your model is large
-- **maxNumGpusPerEngine**: Limit search space or work around constraints (e.g., [AIC attention heads](#ai-configurator-attention-head-constraint-error))
-- **numGpusPerNode**: Determine the upper bound of GPUs per node for dense models and configure Grove for multi-node MoE engines
-- **gpuType**: Informational only, auto-detected by the controller. For AI Configurator, use `aicSystem` in the [sweep configuration](#ai-configurator-configuration) instead
+- **numGPUsPerNode**: Determine the upper bound of GPUs per node for dense models and configure Grove for multi-node MoE engines
+- **gpuSku**: GPU SKU identifier, auto-detected by the controller
 
 > [!TIP]
 > If you don't specify hardware constraints, the controller auto-detects based on your model size and available cluster resources.
@@ -327,13 +317,14 @@ sweep:
 
 ### Planner Configuration (Optional)
 
-Pass arguments to the SLA planner:
+Pass arguments to the SLA planner via the features section:
 
 ```yaml
-planner:
-  planner_min_endpoint: 2                    # Minimum endpoints to maintain
-  planner_adjustment_interval: 60            # Adjustment interval (seconds)
-  planner_load_predictor: linear             # Load prediction method
+features:
+  planner:
+    planner_min_endpoint: 2                    # Minimum endpoints to maintain
+    planner_adjustment_interval: 60            # Adjustment interval (seconds)
+    planner_load_predictor: linear             # Load prediction method
 ```
 
 > [!NOTE]
@@ -344,11 +335,10 @@ planner:
 For large models, use a pre-populated PVC containing model weights instead of downloading from HuggingFace:
 
 ```yaml
-deployment:
-  modelCache:
-    pvcName: "model-cache"
-    pvcPath: "hub/models--deepseek-ai--DeepSeek-R1"
-    mountPath: "/opt/model-cache"
+modelCache:
+  pvcName: "model-cache"
+  pvcModelPath: "hub/models--deepseek-ai--DeepSeek-R1"
+  pvcMountPath: "/opt/model-cache"
 ```
 
 Requirements:
@@ -357,7 +347,7 @@ Requirements:
 
 ### Engine Configuration (Auto-configured)
 
-The controller automatically injects these from high-level fields:
+The controller automatically handles model and backend configuration from high-level fields:
 
 ```yaml
 # You specify:
@@ -365,34 +355,24 @@ spec:
   model: "Qwen/Qwen3-0.6B"
   backend: vllm
 
-# Controller auto-injects:
-profilingConfig:
-  config:
-    deployment:
-      model: "Qwen/Qwen3-0.6B"
-    engine:
-      backend: vllm
-      config: /path/to/configmap
+# Controller auto-injects into the profiling job
 ```
 
-You should **not** manually set `deployment.model` or `engine.backend` in `profilingConfig.config`.
+You should **not** manually set model or backend in profiling config overrides.
 
-### Using Existing DGD Configs (ConfigMap)
+### Using Existing DGD Configs
 
-Reference an existing DGD config via ConfigMap:
-
-```bash
-kubectl create configmap my-config \
-  --from-file=disagg.yaml=/path/to/your/disagg.yaml \
-  --namespace $NAMESPACE \
-  --dry-run=client -o yaml | kubectl apply -f -
-```
+Provide a base DGD config via the overrides section:
 
 ```yaml
-profilingConfig:
-  configMapRef:
-    name: my-config
-    key: disagg.yaml
+overrides:
+  dgd:
+    apiVersion: nvidia.com/v1alpha1
+    kind: DynamoGraphDeployment
+    metadata:
+      name: my-dgd
+    spec:
+      # ... your base DGD spec
 ```
 
 The profiler uses the DGD config as a **base template**, then optimizes it based on your SLA targets.
@@ -415,7 +395,7 @@ The profiler uses the DGD config as a **base template**, then optimizes it based
 | `--webui-port` | int | 8000 | Port for WebUI |
 
 > [!NOTE]
-> CLI arguments map to DGDR config fields: `--min-num-gpus` = `hardware.minNumGpusPerEngine`, `--max-num-gpus` = `hardware.maxNumGpusPerEngine`, `--use-ai-configurator` = `sweep.useAiConfigurator`. See [DGDR Configuration Structure](#dgdr-configuration-structure) for all field mappings.
+> CLI arguments map to DGDR spec fields: `--min-num-gpus` = `hardware` config, `--max-num-gpus` = `hardware` config, `--use-ai-configurator` = sweep config. See [DGDR Configuration Structure](#dgdr-configuration-structure) for all field mappings.
 
 ## Integration
 
@@ -476,10 +456,10 @@ Then manually extract and apply:
 
 ```bash
 # Extract generated DGD from DGDR status
-kubectl get dgdr my-deployment -n $NAMESPACE -o jsonpath='{.status.generatedDeployment}' | kubectl apply -f -
+kubectl get dgdr my-deployment -n $NAMESPACE -o jsonpath='{.status.profilingResults.selectedConfig}' | kubectl apply -f -
 
 # Or save to file for review
-kubectl get dgdr my-deployment -n $NAMESPACE -o jsonpath='{.status.generatedDeployment}' > my-dgd.yaml
+kubectl get dgdr my-deployment -n $NAMESPACE -o jsonpath='{.status.profilingResults.selectedConfig}' > my-dgd.yaml
 ```
 
 ### Mocker Deployment
@@ -490,7 +470,9 @@ Deploy a mocker deployment that simulates engines without GPUs:
 spec:
   model: <model-name>
   backend: trtllm
-  useMocker: true    # Deploy mocker instead of real backend
+  features:
+    mocker:
+      enabled: true    # Deploy mocker instead of real backend
   autoApply: true
 ```
 
@@ -498,11 +480,17 @@ Profiling still runs against the real backend to collect performance data. The m
 
 ### Accessing Profiling Artifacts
 
-By default, profiling data is stored in ConfigMaps. For detailed artifacts (plots, logs, raw data), attach a PVC:
+By default, profiling data is stored in ConfigMaps. For detailed artifacts (plots, logs, raw data), attach a PVC via overrides:
 
 ```yaml
-profilingConfig:
-  outputPVC: "dynamo-pvc"
+overrides:
+  profilingJob:
+    template:
+      spec:
+        volumes:
+        - name: profiling-output
+          persistentVolumeClaim:
+            claimName: "dynamo-pvc"
 ```
 
 **ConfigMaps (always created):**

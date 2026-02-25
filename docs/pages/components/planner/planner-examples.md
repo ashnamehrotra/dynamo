@@ -15,30 +15,22 @@ Practical examples for deploying the SLA Planner with throughput-based scaling. 
 The simplest way to deploy with the SLA planner. Uses AI Configurator for offline profiling (20-30 seconds instead of hours):
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: sla-aic
 spec:
   model: Qwen/Qwen3-32B
   backend: vllm
+  image: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
-    config:
-      sla:
-        isl: 3000
-        osl: 150
-        ttft: 200
-        itl: 20
-      sweep:
-        useAiConfigurator: true
-        aicSystem: h200_sxm
-        aicHfId: Qwen/Qwen3-32B
-        aicBackendVersion: "0.20.0"
+  workload:
+    isl: 3000
+    osl: 150
 
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
+  sla:
+    ttft: 200
+    itl: 20
 
   autoApply: true
 ```
@@ -54,29 +46,22 @@ kubectl apply -f components/src/dynamo/profiler/deploy/profile_sla_aic_dgdr.yaml
 Standard online profiling runs real GPU measurements for more accurate results. Takes 2-4 hours:
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: sla-online
 spec:
   model: meta-llama/Llama-3.3-70B-Instruct
   backend: vllm
+  image: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
-    config:
-      sla:
-        isl: 3000
-        osl: 150
-        ttft: 200
-        itl: 20
-      sweep:
-        useAiConfigurator: false
-        prefillInterpolationGranularity: 16
-        decodeInterpolationGranularity: 6
+  workload:
+    isl: 3000
+    osl: 150
 
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/vllm-runtime:0.6.1"
+  sla:
+    ttft: 200
+    itl: 20
 
   autoApply: true
 ```
@@ -91,7 +76,7 @@ Available sample DGDRs in `components/src/dynamo/profiler/deploy/`:
 - **`profile_sla_aic_dgdr.yaml`**: Fast offline profiling using AI Configurator
 - **`profile_sla_moe_dgdr.yaml`**: Online profiling for MoE models (SGLang)
 
-> **Profiling Config Cases**: Prior to 0.8.1, fields under `profilingConfig.config` use snake_case. Starting 0.8.1, fields use camelCase. There is backwards compatibility to snake_case, but example DGDRs use camelCase.
+> **Note**: Starting with v1beta1, DGDR fields use structured spec fields (e.g., `spec.workload`, `spec.sla`, `spec.hardware`) instead of the nested `profilingConfig.config` blob used in v1alpha1.
 
 ## Kubernetes Examples
 
@@ -100,27 +85,22 @@ Available sample DGDRs in `components/src/dynamo/profiler/deploy/`:
 For Mixture-of-Experts models like DeepSeek-R1, use SGLang backend:
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: sla-moe
 spec:
   model: deepseek-ai/DeepSeek-R1
   backend: sglang
+  image: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
-    config:
-      sla:
-        isl: 4000
-        osl: 500
-        ttft: 300
-        itl: 10
-      sweep:
-        useAiConfigurator: false
+  workload:
+    isl: 4000
+    osl: 500
 
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
+  sla:
+    ttft: 300
+    itl: 10
 
   autoApply: true
 ```
@@ -146,33 +126,22 @@ kubectl create configmap deepseek-r1-config \
 **Step 2: Reference it in your DGDR:**
 
 ```yaml
-apiVersion: nvidia.com/v1alpha1
+apiVersion: nvidia.com/v1beta1
 kind: DynamoGraphDeploymentRequest
 metadata:
   name: deepseek-r1
 spec:
   model: deepseek-ai/DeepSeek-R1
   backend: sglang
+  image: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
-    configMapRef:
-      name: deepseek-r1-config
-      key: disagg.yaml  # Must match the key used in --from-file
-    config:
-      sla:
-        isl: 4000
-        osl: 500
-        ttft: 300
-        itl: 10
-      sweep:
-        useAiConfigurator: true
-        aicSystem: h200_sxm
-        aicHfId: deepseek-ai/DeepSeek-V3
-        aicBackendVersion: "0.20.0"
+  workload:
+    isl: 4000
+    osl: 500
 
-  deploymentOverrides:
-    workersImage: "nvcr.io/nvidia/ai-dynamo/sglang-runtime:0.6.1"
+  sla:
+    ttft: 300
+    itl: 10
 
   autoApply: true
 ```
@@ -213,19 +182,20 @@ Deploy a mocker backend that simulates GPU timing behavior without real GPUs. Us
 spec:
   model: <model-name>
   backend: trtllm  # Real backend for profiling
-  useMocker: true  # Deploy mocker instead of real backend
+  features:
+    mocker:
+      enabled: true  # Deploy mocker instead of real backend
 
-  profilingConfig:
-    profilerImage: "nvcr.io/nvidia/dynamo/trtllm-runtime:<image-tag>"
-    config:
-      sla:
-        isl: 3000
-        osl: 150
-        ttft: 200
-        itl: 20
-      sweep:
-        useAiConfigurator: true
-        aicSystem: h100_sxm
+  image: "nvcr.io/nvidia/dynamo/trtllm-runtime:<image-tag>"
+
+  workload:
+    isl: 3000
+    osl: 150
+
+  sla:
+    ttft: 200
+    itl: 20
+
   autoApply: true
 ```
 
@@ -316,10 +286,9 @@ See `components/planner/test/test_virtual_connector.py` for a full working examp
 Pass planner-specific settings through the DGDR:
 
 ```yaml
-profilingConfig:
-  config:
-    planner:
-      plannerMinEndpoint: 2
+features:
+  planner:
+    plannerMinEndpoint: 2
 ```
 
 ### Review Before Deploy (autoApply: false)
@@ -336,7 +305,7 @@ After profiling completes:
 ```bash
 # Extract and review generated DGD
 kubectl get dgdr sla-aic -n $NAMESPACE \
-  -o jsonpath='{.status.generatedDeployment}' > my-dgd.yaml
+  -o jsonpath='{.status.profilingResults.selectedConfig}' > my-dgd.yaml
 
 # Review and modify as needed
 vi my-dgd.yaml
@@ -351,14 +320,13 @@ Save detailed profiling artifacts (plots, logs, raw data) to a PVC:
 
 ```yaml
 spec:
-  profilingConfig:
-    outputPVC: "dynamo-pvc"
-    config:
-      sla:
-        isl: 3000
-        osl: 150
-        ttft: 200
-        itl: 20
+  workload:
+    isl: 3000
+    osl: 150
+
+  sla:
+    ttft: 200
+    itl: 20
 ```
 
 Setup:
