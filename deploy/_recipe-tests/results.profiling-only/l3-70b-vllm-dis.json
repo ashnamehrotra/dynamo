@@ -1,0 +1,2031 @@
+[
+  {
+    "SuitePath": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr",
+    "SuiteDescription": "DGDR e2e Suite",
+    "SuiteLabels": [],
+    "SuiteSemVerConstraints": [],
+    "SuiteSucceeded": true,
+    "SuiteHasProgrammaticFocus": false,
+    "SpecialSuiteFailureReasons": null,
+    "PreRunStats": {
+      "TotalSpecs": 29,
+      "SpecsThatWillRun": 15
+    },
+    "StartTime": "2026-05-11T02:12:25.415523-04:00",
+    "EndTime": "2026-05-11T02:14:17.251413-04:00",
+    "RunTime": 111835177417,
+    "SuiteConfig": {
+      "RandomSeed": 1778479945,
+      "RandomizeAllSpecs": false,
+      "FocusStrings": [
+        "DGDR Lifecycle$|DGDR Profiling|DGDR Validation"
+      ],
+      "SkipStrings": [
+        "DGDR Lifecycle Scenarios"
+      ],
+      "FocusFiles": null,
+      "SkipFiles": null,
+      "LabelFilter": "",
+      "SemVerFilter": "",
+      "FailOnPending": false,
+      "FailOnEmpty": false,
+      "FailFast": false,
+      "FlakeAttempts": 0,
+      "MustPassRepeatedly": 0,
+      "DryRun": false,
+      "PollProgressAfter": 0,
+      "PollProgressInterval": 0,
+      "Timeout": 27000000000000,
+      "EmitSpecProgress": false,
+      "OutputInterceptorMode": "",
+      "SourceRoots": null,
+      "GracePeriod": 30000000000,
+      "ParallelProcess": 1,
+      "ParallelTotal": 1,
+      "ParallelHost": ""
+    },
+    "SpecReports": [
+      {
+        "ContainerHierarchyTexts": null,
+        "ContainerHierarchyLocations": null,
+        "ContainerHierarchyLabels": null,
+        "ContainerHierarchySemVerConstraints": null,
+        "LeafNodeType": "BeforeSuite",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+          "LineNumber": 93
+        },
+        "LeafNodeLabels": null,
+        "LeafNodeSemVerConstraints": null,
+        "LeafNodeText": "",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:25.415627-04:00",
+        "EndTime": "2026-05-11T02:12:25.421978-04:00",
+        "RunTime": 6350875,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "CapturedGinkgoWriterOutput": "DGDR e2e: namespace=dynamo-test image=nvcr.io/nvidia/ai-dynamo/dynamo-planner:1.1.0 model=nvidia/Llama-3.1-70B-Instruct-FP8 mocker=false\n",
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+              "LineNumber": 93
+            },
+            "TimelineLocation": {
+              "Order": 1,
+              "Time": "2026-05-11T02:12:25.415628-04:00"
+            },
+            "Message": "TOP-LEVEL",
+            "NodeType": "BeforeSuite"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+              "LineNumber": 93
+            },
+            "TimelineLocation": {
+              "Offset": 137,
+              "Order": 3,
+              "Time": "2026-05-11T02:12:25.421976-04:00"
+            },
+            "Message": "TOP-LEVEL",
+            "Duration": 6348416,
+            "NodeType": "BeforeSuite"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 40
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reject a DGDR with missing model",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:25.422079-04:00",
+        "EndTime": "2026-05-11T02:12:26.940149-04:00",
+        "RunTime": 1518060333,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 40
+            },
+            "TimelineLocation": {
+              "Order": 4,
+              "Time": "2026-05-11T02:12:25.422111-04:00"
+            },
+            "Message": "should reject a DGDR with missing model",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 40
+            },
+            "TimelineLocation": {
+              "Order": 6,
+              "Time": "2026-05-11T02:12:26.94014-04:00"
+            },
+            "Message": "should reject a DGDR with missing model",
+            "Duration": 1518020000,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 47
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reject thorough + auto backend",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:26.940248-04:00",
+        "EndTime": "2026-05-11T02:12:27.191605-04:00",
+        "RunTime": 251355417,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 47
+            },
+            "TimelineLocation": {
+              "Order": 7,
+              "Time": "2026-05-11T02:12:26.940252-04:00"
+            },
+            "Message": "should reject thorough + auto backend",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 47
+            },
+            "TimelineLocation": {
+              "Order": 9,
+              "Time": "2026-05-11T02:12:27.191588-04:00"
+            },
+            "Message": "should reject thorough + auto backend",
+            "Duration": 251334417,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 62
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reject an invalid backend",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:27.191754-04:00",
+        "EndTime": "2026-05-11T02:12:27.445577-04:00",
+        "RunTime": 253821209,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 62
+            },
+            "TimelineLocation": {
+              "Order": 10,
+              "Time": "2026-05-11T02:12:27.191762-04:00"
+            },
+            "Message": "should reject an invalid backend",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 62
+            },
+            "TimelineLocation": {
+              "Order": 12,
+              "Time": "2026-05-11T02:12:27.445569-04:00"
+            },
+            "Message": "should reject an invalid backend",
+            "Duration": 253805334,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 69
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reject an invalid searchStrategy",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:27.445868-04:00",
+        "EndTime": "2026-05-11T02:12:27.694292-04:00",
+        "RunTime": 248422833,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 69
+            },
+            "TimelineLocation": {
+              "Order": 13,
+              "Time": "2026-05-11T02:12:27.445874-04:00"
+            },
+            "Message": "should reject an invalid searchStrategy",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 69
+            },
+            "TimelineLocation": {
+              "Order": 15,
+              "Time": "2026-05-11T02:12:27.694286-04:00"
+            },
+            "Message": "should reject an invalid searchStrategy",
+            "Duration": 248410375,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 76
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reject an invalid sla.optimizationType",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:27.694402-04:00",
+        "EndTime": "2026-05-11T02:12:27.946075-04:00",
+        "RunTime": 251671208,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 76
+            },
+            "TimelineLocation": {
+              "Order": 16,
+              "Time": "2026-05-11T02:12:27.694407-04:00"
+            },
+            "Message": "should reject an invalid sla.optimizationType",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 76
+            },
+            "TimelineLocation": {
+              "Order": 18,
+              "Time": "2026-05-11T02:12:27.94606-04:00"
+            },
+            "Message": "should reject an invalid sla.optimizationType",
+            "Duration": 251652041,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 86
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should accept a valid minimal DGDR",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:27.946276-04:00",
+        "EndTime": "2026-05-11T02:12:28.205977-04:00",
+        "RunTime": 259699083,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 86
+            },
+            "TimelineLocation": {
+              "Order": 19,
+              "Time": "2026-05-11T02:12:27.946285-04:00"
+            },
+            "Message": "should accept a valid minimal DGDR",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 86
+            },
+            "TimelineLocation": {
+              "Order": 21,
+              "Time": "2026-05-11T02:12:28.205964-04:00"
+            },
+            "Message": "should accept a valid minimal DGDR",
+            "Duration": 259677958,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Webhook Validation"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 92
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should accept a fully-specified DGDR",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:28.206106-04:00",
+        "EndTime": "2026-05-11T02:12:28.472129-04:00",
+        "RunTime": 266021292,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 92
+            },
+            "TimelineLocation": {
+              "Order": 22,
+              "Time": "2026-05-11T02:12:28.206113-04:00"
+            },
+            "Message": "should accept a fully-specified DGDR",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 92
+            },
+            "TimelineLocation": {
+              "Order": 24,
+              "Time": "2026-05-11T02:12:28.472112-04:00"
+            },
+            "Message": "should accept a fully-specified DGDR",
+            "Duration": 265997375,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "CRD Metadata"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 112
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 114
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should have v1beta1 as the storage version",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:28.472357-04:00",
+        "EndTime": "2026-05-11T02:12:29.974246-04:00",
+        "RunTime": 1501879250,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 114
+            },
+            "TimelineLocation": {
+              "Order": 25,
+              "Time": "2026-05-11T02:12:28.472367-04:00"
+            },
+            "Message": "should have v1beta1 as the storage version",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 114
+            },
+            "TimelineLocation": {
+              "Order": 27,
+              "Time": "2026-05-11T02:12:29.974236-04:00"
+            },
+            "Message": "should have v1beta1 as the storage version",
+            "Duration": 1501859583,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "CRD Metadata"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 112
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 123
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should support the dgdr shortname",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:29.974416-04:00",
+        "EndTime": "2026-05-11T02:12:30.794867-04:00",
+        "RunTime": 820445459,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 123
+            },
+            "TimelineLocation": {
+              "Order": 28,
+              "Time": "2026-05-11T02:12:29.974433-04:00"
+            },
+            "Message": "should support the dgdr shortname",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 123
+            },
+            "TimelineLocation": {
+              "Order": 30,
+              "Time": "2026-05-11T02:12:30.79485-04:00"
+            },
+            "Message": "should support the dgdr shortname",
+            "Duration": 820411417,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "CRD Metadata"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 112
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 130
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should show expected columns in kubectl output",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:30.795087-04:00",
+        "EndTime": "2026-05-11T02:12:32.163566-04:00",
+        "RunTime": 1368470166,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 130
+            },
+            "TimelineLocation": {
+              "Order": 31,
+              "Time": "2026-05-11T02:12:30.795099-04:00"
+            },
+            "Message": "should show expected columns in kubectl output",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 130
+            },
+            "TimelineLocation": {
+              "Order": 33,
+              "Time": "2026-05-11T02:12:31.899472-04:00"
+            },
+            "Message": "should show expected columns in kubectl output",
+            "Duration": 1104366291,
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 34,
+              "Time": "2026-05-11T02:12:31.899505-04:00"
+            },
+            "Message": "CRD Metadata",
+            "NodeType": "DeferCleanup (Each)"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 36,
+              "Time": "2026-05-11T02:12:32.163558-04:00"
+            },
+            "Message": "CRD Metadata",
+            "Duration": 264050708,
+            "NodeType": "DeferCleanup (Each)"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Version Conversion"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 155
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 157
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should accept a v1alpha1 DGDR",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:32.16371-04:00",
+        "EndTime": "2026-05-11T02:12:34.269857-04:00",
+        "RunTime": 2106133584,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 157
+            },
+            "TimelineLocation": {
+              "Order": 37,
+              "Time": "2026-05-11T02:12:32.163718-04:00"
+            },
+            "Message": "should accept a v1alpha1 DGDR",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 157
+            },
+            "TimelineLocation": {
+              "Order": 39,
+              "Time": "2026-05-11T02:12:34.269807-04:00"
+            },
+            "Message": "should accept a v1alpha1 DGDR",
+            "Duration": 2106075334,
+            "NodeType": "It"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Validation",
+          "Version Conversion"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+            "LineNumber": 155
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+          "LineNumber": 182
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should serve a v1alpha1 view of a v1beta1 object",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:34.270178-04:00",
+        "EndTime": "2026-05-11T02:12:36.040851-04:00",
+        "RunTime": 1770662333,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 182
+            },
+            "TimelineLocation": {
+              "Order": 40,
+              "Time": "2026-05-11T02:12:34.270194-04:00"
+            },
+            "Message": "should serve a v1alpha1 view of a v1beta1 object",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/validation_test.go",
+              "LineNumber": 182
+            },
+            "TimelineLocation": {
+              "Order": 42,
+              "Time": "2026-05-11T02:12:35.793419-04:00"
+            },
+            "Message": "should serve a v1alpha1 view of a v1beta1 object",
+            "Duration": 1523214917,
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 43,
+              "Time": "2026-05-11T02:12:35.793448-04:00"
+            },
+            "Message": "Version Conversion",
+            "NodeType": "DeferCleanup (Each)"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 45,
+              "Time": "2026-05-11T02:12:36.04084-04:00"
+            },
+            "Message": "Version Conversion",
+            "Duration": 247390958,
+            "NodeType": "DeferCleanup (Each)"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Backend variations with rapid profiling"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 40
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should complete full lifecycle with vllm backend",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.040992-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Backend variations with rapid profiling"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 47
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should complete full lifecycle with sglang backend",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041007-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Backend variations with rapid profiling"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 38
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 54
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should complete full lifecycle with trtllm backend",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041088-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Search strategy and autoApply variations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 66
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 68
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should complete thorough profiling without deploying",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041096-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Search strategy and autoApply variations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 66
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 82
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reach Ready but not Deployed with autoApply=false",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041145-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Feature combinations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 99
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 101
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should include Planner service when planner is enabled",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041155-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "SLA and workload parameter variations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 129
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 131
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should profile with custom SLA and workload constraints",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041175-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "SLA and workload parameter variations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 129
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 151
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should profile with latency optimization",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041182-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "SLA and workload parameter variations"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 129
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 169
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should profile with throughput optimization",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041189-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Hardware configuration"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 192
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 194
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should profile with specified GPU configuration",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041195-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Multi-step workflows"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 218
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 220
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should run rapid profiling across multiple backends sequentially",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041203-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle Scenarios",
+          "Multi-step workflows"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 32
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+            "LineNumber": 218
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/dgdr_test.go",
+          "LineNumber": 255
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should profile then deploy with custom SLA constraints",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:12:36.041209-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Profiling",
+          "Rapid search strategy"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 31
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 33
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+          "LineNumber": 35
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should emit an output ConfigMap with final_config.yaml",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:12:36.041278-04:00",
+        "EndTime": "2026-05-11T02:13:04.378073-04:00",
+        "RunTime": 28336614542,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 35
+            },
+            "TimelineLocation": {
+              "Order": 46,
+              "Time": "2026-05-11T02:12:36.041286-04:00"
+            },
+            "Message": "should emit an output ConfigMap with final_config.yaml",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 35
+            },
+            "TimelineLocation": {
+              "Order": 48,
+              "Time": "2026-05-11T02:13:04.11849-04:00"
+            },
+            "Message": "should emit an output ConfigMap with final_config.yaml",
+            "Duration": 28077025083,
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 49,
+              "Time": "2026-05-11T02:13:04.118514-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "NodeType": "DeferCleanup (Each)"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 51,
+              "Time": "2026-05-11T02:13:04.378057-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "Duration": 259540834,
+            "NodeType": "DeferCleanup (Each)"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Profiling",
+          "Rapid search strategy"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 31
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 33
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+          "LineNumber": 57
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should include Planner service when planner feature is enabled",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:13:04.378532-04:00",
+        "EndTime": "2026-05-11T02:13:33.176959-04:00",
+        "RunTime": 28798243375,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 57
+            },
+            "TimelineLocation": {
+              "Order": 52,
+              "Time": "2026-05-11T02:13:04.378546-04:00"
+            },
+            "Message": "should include Planner service when planner feature is enabled",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 57
+            },
+            "TimelineLocation": {
+              "Order": 54,
+              "Time": "2026-05-11T02:13:32.604691-04:00"
+            },
+            "Message": "should include Planner service when planner feature is enabled",
+            "Duration": 28225964500,
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 55,
+              "Time": "2026-05-11T02:13:32.604836-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "NodeType": "DeferCleanup (Each)"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 57,
+              "Time": "2026-05-11T02:13:33.176943-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "Duration": 572103750,
+            "NodeType": "DeferCleanup (Each)"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Profiling",
+          "Rapid search strategy"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 31
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+            "LineNumber": 33
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+          "LineNumber": 85
+        },
+        "LeafNodeLabels": [
+          "xfail"
+        ],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should respect totalGpus budget in generated DGD [known issue #8583]",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:13:33.17724-04:00",
+        "EndTime": "2026-05-11T02:14:17.250921-04:00",
+        "RunTime": 44073400666,
+        "ParallelProcess": 1,
+        "NumAttempts": 1,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 85
+            },
+            "TimelineLocation": {
+              "Order": 58,
+              "Time": "2026-05-11T02:13:33.17725-04:00"
+            },
+            "Message": "should respect totalGpus budget in generated DGD [known issue #8583]",
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/profiling_test.go",
+              "LineNumber": 85
+            },
+            "TimelineLocation": {
+              "Order": 60,
+              "Time": "2026-05-11T02:14:16.988645-04:00"
+            },
+            "Message": "should respect totalGpus budget in generated DGD [known issue #8583]",
+            "Duration": 43811115583,
+            "NodeType": "It"
+          },
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 61,
+              "Time": "2026-05-11T02:14:16.988664-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "NodeType": "DeferCleanup (Each)"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go",
+              "LineNumber": 225
+            },
+            "TimelineLocation": {
+              "Order": 63,
+              "Time": "2026-05-11T02:14:17.250905-04:00"
+            },
+            "Message": "Rapid search strategy",
+            "Duration": 262239584,
+            "NodeType": "DeferCleanup (Each)"
+          }
+        ]
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle",
+          "Rapid profiling"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+            "LineNumber": 28
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+            "LineNumber": 30
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+          "LineNumber": 32
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reach Ready with autoApply=false",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:14:17.251109-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": [
+          "DGDR Lifecycle",
+          "Rapid profiling"
+        ],
+        "ContainerHierarchyLocations": [
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+            "LineNumber": 28
+          },
+          {
+            "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+            "LineNumber": 30
+          }
+        ],
+        "ContainerHierarchyLabels": [
+          [
+            "gpu_0",
+            "nightly",
+            "integration",
+            "k8s"
+          ],
+          []
+        ],
+        "ContainerHierarchySemVerConstraints": [
+          [],
+          []
+        ],
+        "LeafNodeType": "It",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/lifecycle_test.go",
+          "LineNumber": 48
+        },
+        "LeafNodeLabels": [],
+        "LeafNodeSemVerConstraints": [],
+        "LeafNodeText": "should reach Deployed with autoApply=true (non-mocker only)",
+        "State": "skipped",
+        "StartTime": "2026-05-11T02:14:17.251139-04:00",
+        "EndTime": "0001-01-01T00:00:00Z",
+        "RunTime": 0,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0
+      },
+      {
+        "ContainerHierarchyTexts": null,
+        "ContainerHierarchyLocations": null,
+        "ContainerHierarchyLabels": null,
+        "ContainerHierarchySemVerConstraints": null,
+        "LeafNodeType": "AfterSuite",
+        "LeafNodeLocation": {
+          "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+          "LineNumber": 130
+        },
+        "LeafNodeLabels": null,
+        "LeafNodeSemVerConstraints": null,
+        "LeafNodeText": "",
+        "State": "passed",
+        "StartTime": "2026-05-11T02:14:17.251273-04:00",
+        "EndTime": "2026-05-11T02:14:17.251381-04:00",
+        "RunTime": 107250,
+        "ParallelProcess": 1,
+        "NumAttempts": 0,
+        "MaxFlakeAttempts": 0,
+        "MaxMustPassRepeatedly": 0,
+        "SpecEvents": [
+          {
+            "SpecEventType": "Node",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+              "LineNumber": 130
+            },
+            "TimelineLocation": {
+              "Order": 64,
+              "Time": "2026-05-11T02:14:17.251278-04:00"
+            },
+            "Message": "TOP-LEVEL",
+            "NodeType": "AfterSuite"
+          },
+          {
+            "SpecEventType": "Node (End)",
+            "CodeLocation": {
+              "FileName": "/Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/suite_test.go",
+              "LineNumber": 130
+            },
+            "TimelineLocation": {
+              "Order": 66,
+              "Time": "2026-05-11T02:14:17.251378-04:00"
+            },
+            "Message": "TOP-LEVEL",
+            "Duration": 100208,
+            "NodeType": "AfterSuite"
+          }
+        ]
+      }
+    ]
+  }
+]

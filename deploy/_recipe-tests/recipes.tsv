@@ -1,0 +1,41 @@
+# DGDR Recipe Test Matrix
+#
+# Format (PIPE-separated, '|'):
+#   name|model|backend|mode|gpus|arch|pvcModelPath|skipReason
+#
+# - skipReason empty = run it
+# - skipReason non-empty = report as skipped with that reason
+# - pvcModelPath = empty means HF download (mostly used for skipped rows)
+# - DGDR name <= 16 chars to fit 45-char pod-name limit (TRTLLMPrefillWorker = 19)
+#
+# === H100-runnable (models pre-cached on PVC) ===
+l3-70b-vllm-agg|nvidia/Llama-3.1-70B-Instruct-FP8|vllm|agg|4|h100|hub/models--nvidia--Llama-3.1-70B-Instruct-FP8/snapshots/07a08be3d8a8f5254c2aba375b79743bca8fd491|
+l3-70b-vllm-dis|nvidia/Llama-3.1-70B-Instruct-FP8|vllm|disagg-single-node|8|h100|hub/models--nvidia--Llama-3.1-70B-Instruct-FP8/snapshots/07a08be3d8a8f5254c2aba375b79743bca8fd491|
+q235b-tllm-agg|Qwen/Qwen3-235B-A22B-FP8|trtllm|agg-hopper|16|h100|hub/models--Qwen--Qwen3-235B-A22B-FP8/snapshots/39eb2b067ea6b8e3e1dd97d3cd0c7ffeaf3e1a35|
+q235b-tllm-dis|Qwen/Qwen3-235B-A22B-FP8|trtllm|disagg-hopper|16|h100|hub/models--Qwen--Qwen3-235B-A22B-FP8/snapshots/39eb2b067ea6b8e3e1dd97d3cd0c7ffeaf3e1a35|
+n3s-vllm-agg|nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8|vllm|agg|4|h100|hub/models--nvidia--NVIDIA-Nemotron-3-Super-120B-A12B-FP8/snapshots/afc6e8243c7b517501c2d5b9dd1b07cf89e1b81d|
+n3s-sglang-agg|nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8|sglang|agg|4|h100|hub/models--nvidia--NVIDIA-Nemotron-3-Super-120B-A12B-FP8/snapshots/afc6e8243c7b517501c2d5b9dd1b07cf89e1b81d|
+n3s-tllm-dis|nvidia/NVIDIA-Nemotron-3-Super-120B-A12B-FP8|trtllm|disagg|4|h100|hub/models--nvidia--NVIDIA-Nemotron-3-Super-120B-A12B-FP8/snapshots/afc6e8243c7b517501c2d5b9dd1b07cf89e1b81d|
+dsr1-sgl-d8|deepseek-ai/DeepSeek-R1|sglang|disagg-8gpu|16|h100|hub/models--deepseek-ai--DeepSeek-R1/snapshots/56d4cbbb4d29f4355bab4b9a39ccb717a14ad5ad|known to fail (#8571)
+dsr1-sgl-d16|deepseek-ai/DeepSeek-R1|sglang|disagg-16gpu|32|h100|hub/models--deepseek-ai--DeepSeek-R1/snapshots/56d4cbbb4d29f4355bab4b9a39ccb717a14ad5ad|uses entire cluster
+dsr1-vllm-dep16|deepseek-ai/DeepSeek-R1|vllm|disagg-dep16|32|h100|hub/models--deepseek-ai--DeepSeek-R1/snapshots/56d4cbbb4d29f4355bab4b9a39ccb717a14ad5ad|uses entire cluster
+#
+# === Models needing HF download (skipped) ===
+q32b-tllm-agg|Qwen/Qwen3-32B-FP8|trtllm|agg|2|h100||model not on PVC; needs download
+q32b-tllm-dis|Qwen/Qwen3-32B-FP8|trtllm|disagg|8|h100||model not on PVC; needs download
+q32b-vllm-router|Qwen/Qwen3-32B|vllm|disagg-kv-router|16|h100||model not on PVC; needs download
+#
+# === Known-unsupported by AIC profiler (already documented in #8469) ===
+l33-rh-vllm-agg|RedHatAI/Llama-3.3-70B-Instruct-FP8-dynamic|vllm|agg|4|h100|hub/models--RedHatAI--Llama-3.3-70B-Instruct-FP8-dynamic/snapshots/ddb4128556dfcff99e0c41aee159ea6c3e655dcd|AIC: compressed-tensors quant unsupported
+#
+# === Blackwell-only (not testable on H100) ===
+gpt-oss-120b|openai/gpt-oss-120b|trtllm|agg|4|gb200||Blackwell-only
+deepseek-v3.2-nvfp4|deepseek-ai/DeepSeek-V3.2|trtllm|disagg|32|gb200||Blackwell-only
+kimi-k2.5-nvfp4|moonshotai/Kimi-K2.5|trtllm|disagg|8|b200||Blackwell-only
+glm-5-nvfp4|zai-org/GLM-5|trtllm|disagg|20|gb200||Blackwell-only
+qwen3-vl-30b|Qwen/Qwen3-VL-30B|vllm|agg|1|gb200||Blackwell-only (multimodal)
+nemotron-3-nano-omni|nvidia/Nemotron-3-Nano-Omni|custom|agg|1|b200||Blackwell-only (custom container)
+deepseek-v4-flash|deepseek-ai/DeepSeek-V4-Flash|trtllm|disagg|8|b200||Blackwell-only
+deepseek-v4-pro|deepseek-ai/DeepSeek-V4-Pro|trtllm|disagg|16|gb200||Blackwell-only
+qwen3-235b-blackwell|Qwen/Qwen3-235B-A22B-FP8|trtllm|agg-blackwell|8|b200||Blackwell-only
+q32b-vllm-a100|Qwen/Qwen3-32B-FP8|vllm|disagg|8|a100||A100-only

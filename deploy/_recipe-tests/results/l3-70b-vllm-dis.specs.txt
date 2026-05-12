@@ -1,0 +1,32 @@
+[passed] 
+[passed] DGDR Profiling > Rapid search strategy > should emit an output ConfigMap with final_config.yaml
+[passed] DGDR Profiling > Rapid search strategy > should include Planner service when planner feature is enabled
+[passed] DGDR Profiling > Rapid search strategy > should respect totalGpus budget in generated DGD [known issue #8583]
+[passed] DGDR Validation > Webhook Validation > should reject a DGDR with missing model
+[passed] DGDR Validation > Webhook Validation > should reject thorough + auto backend
+[passed] DGDR Validation > Webhook Validation > should reject an invalid backend
+[passed] DGDR Validation > Webhook Validation > should reject an invalid searchStrategy
+[passed] DGDR Validation > Webhook Validation > should reject an invalid sla.optimizationType
+[passed] DGDR Validation > Webhook Validation > should accept a valid minimal DGDR
+[passed] DGDR Validation > Webhook Validation > should accept a fully-specified DGDR
+[passed] DGDR Validation > CRD Metadata > should have v1beta1 as the storage version
+[passed] DGDR Validation > CRD Metadata > should support the dgdr shortname
+[passed] DGDR Validation > CRD Metadata > should show expected columns in kubectl output
+[passed] DGDR Validation > Version Conversion > should accept a v1alpha1 DGDR
+[passed] DGDR Validation > Version Conversion > should serve a v1alpha1 view of a v1beta1 object
+[passed] DGDR Lifecycle > Rapid profiling > should reach Ready with autoApply=false
+[failed] DGDR Lifecycle > Rapid profiling > should reach Deployed with autoApply=true (non-mocker only)
+    Timed out after 5400.004s. The function passed to Eventually failed at /Users/ashnamehrotra/dynamo/deploy/operator/test/e2e/dgdr/helpers_test.go:264 with: DGDR l3-70b-vllm-dis-depl phase is Deploying, waiting for Deployed Expected     <v1beta1.DGDRPhase>: Deploying to equal     <v1beta1.DGDRPhase>: Deployed
+[skipped] DGDR Lifecycle Scenarios > Backend variations with rapid profiling > should complete full lifecycle with vllm backend
+[skipped] DGDR Lifecycle Scenarios > Backend variations with rapid profiling > should complete full lifecycle with sglang backend
+[skipped] DGDR Lifecycle Scenarios > Backend variations with rapid profiling > should complete full lifecycle with trtllm backend
+[skipped] DGDR Lifecycle Scenarios > Search strategy and autoApply variations > should complete thorough profiling without deploying
+[skipped] DGDR Lifecycle Scenarios > Search strategy and autoApply variations > should reach Ready but not Deployed with autoApply=false
+[skipped] DGDR Lifecycle Scenarios > Feature combinations > should include Planner service when planner is enabled
+[skipped] DGDR Lifecycle Scenarios > SLA and workload parameter variations > should profile with custom SLA and workload constraints
+[skipped] DGDR Lifecycle Scenarios > SLA and workload parameter variations > should profile with latency optimization
+[skipped] DGDR Lifecycle Scenarios > SLA and workload parameter variations > should profile with throughput optimization
+[skipped] DGDR Lifecycle Scenarios > Hardware configuration > should profile with specified GPU configuration
+[skipped] DGDR Lifecycle Scenarios > Multi-step workflows > should run rapid profiling across multiple backends sequentially
+[skipped] DGDR Lifecycle Scenarios > Multi-step workflows > should profile then deploy with custom SLA constraints
+[passed] 
