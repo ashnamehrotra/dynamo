@@ -17,7 +17,7 @@
 # Act 2 — LWS vs. Grove
 #     Show what LeaderWorkerSet (LWS) gives you, then walk through what
 #     Grove adds on top: PodCliqueSet / PodClique / PodCliqueScalingGroup,
-#     gang scheduling, startup ordering, and topology-aware placement.
+#     hierarchical gang scheduling, and startup ordering.
 #
 # Act 3 — Watch It Work
 #     Apply a multinode DynamoGraphDeployment with `multinode.nodeCount`,
@@ -35,7 +35,7 @@
 #   ./demo-multinode-grove-narrated.sh
 #   ./demo-multinode-grove-narrated.sh --namespace dynamo-test --model nvidia/DeepSeek-V3.2-NVFP4
 #   ./demo-multinode-grove-narrated.sh --no-cleanup        # keep DGD after demo
-#   ./demo-multinode-grove-narrated.sh --skip-chaos        # skip pod-kill demo
+#   ./demo-multinode-grove-narrated.sh --skip-scale        # skip scale-out demo
 #
 set -e
 
@@ -43,21 +43,34 @@ set -e
 # Configuration
 # =============================================================================
 NAMESPACE="${NAMESPACE:-dynamo-test}"
-MODEL="${MODEL:-nvidia/DeepSeek-V3.2-NVFP4}"
+# Demo model: Llama-3.1-70B-FP8.
+# Why this model and not DeepSeek-R1 (the motivating example in Step 1)?
+#   On AKS H100s without IB, NCCL falls back to TCP. R1's 671B MoE init does
+#   so many cross-node collectives during cuda-graph capture that startup over
+#   TCP takes 30+ min. A dense 70B model boots in ~3 min and demos the IDENTICAL
+#   Grove orchestration story (PCS, PCSG, gang scheduling, topology). The DGD
+#   spec is the same — change MODEL/MODEL_PATH and bump nodeCount for R1.
+MODEL="${MODEL:-nvidia/Llama-3.1-70B-Instruct-FP8}"
 BACKEND="${BACKEND:-sglang}"
 DGD_NAME="${DGD_NAME:-multinode-grove-demo}"
 NODES_PER_REPLICA="${NODES_PER_REPLICA:-2}"
 GPUS_PER_NODE="${GPUS_PER_NODE:-8}"
 DO_CLEANUP=true
-SKIP_CHAOS=false
+SKIP_SCALE=false
 PORT_FORWARD_PORT=8000
 
 # Model cache PVC
 PVC_NAME="${PVC_NAME:-model-cache}"
 PVC_MOUNT_PATH="${PVC_MOUNT_PATH:-/model-store}"
+# Direct snapshot path inside the PVC. We pass this as --model-path to bypass
+# HuggingFace name resolution entirely (the cache on this PVC is missing
+# refs/main, which transformers needs in offline mode). The HF id above is
+# still used as --served-model-name so the OpenAI API answers to it.
+MODEL_PATH="${MODEL_PATH:-${PVC_MOUNT_PATH}/hub/models--nvidia--Llama-3.1-70B-Instruct-FP8/snapshots/07a08be3d8a8f5254c2aba375b79743bca8fd491}"
 
 # Container image (override per cluster)
-WORKER_IMAGE="${WORKER_IMAGE:-nvcr.io/nvidia/ai-dynamo/sglang-runtime:latest}"
+# NOTE: NGC does NOT publish a `:latest` tag — pin to a versioned release.
+WORKER_IMAGE="${WORKER_IMAGE:-nvcr.io/nvidia/ai-dynamo/sglang-runtime:1.0.1}"
 
 # Colors
 RED='\033[0;31m'
@@ -87,7 +100,7 @@ while [[ $# -gt 0 ]]; do
         --image)             WORKER_IMAGE="$2"; shift 2 ;;
         --port)              PORT_FORWARD_PORT="$2"; shift 2 ;;
         --no-cleanup)        DO_CLEANUP=false; shift ;;
-        --skip-chaos)        SKIP_CHAOS=true; shift ;;
+        --skip-scale)        SKIP_SCALE=true; shift ;;
         --help|-h)
             sed -n '3,40p' "$0" | sed 's/^# \{0,1\}//'
             exit 0
@@ -172,10 +185,23 @@ metadata:
     demo: multinode-grove
 spec:
   backendFramework: ${BACKEND}
-  pvcs:
-    - name: model-cache
-      create: false
-      existingClaimName: ${PVC_NAME}
+  envs:
+    # Point HuggingFace cache at the PVC mount; weights are pre-downloaded
+    # so workers don't have to hit the HuggingFace API.
+    - name: HF_HOME
+      value: ${PVC_MOUNT_PATH}
+    # ── NCCL tuning for AKS H100 multinode ──
+    # AKS Azure-overlay CNI doesn't expose IB to NCCL's auto-detect;
+    # force TCP over the pod's eth0 and disable IB so NCCL doesn't
+    # spin forever trying to negotiate a transport that won't work.
+    - name: NCCL_IB_DISABLE
+      value: \"1\"
+    - name: NCCL_SOCKET_IFNAME
+      value: eth0
+    - name: GLOO_SOCKET_IFNAME
+      value: eth0
+    - name: NCCL_DEBUG
+      value: INFO
 
   services:
     Frontend:
@@ -189,6 +215,10 @@ spec:
           volumeMounts:
             - name: model-cache
               mountPath: ${PVC_MOUNT_PATH}
+        volumes:
+          - name: model-cache
+            persistentVolumeClaim:
+              claimName: ${PVC_NAME}
 
     decode:
       componentType: worker
@@ -210,12 +240,19 @@ spec:
             - \"-m\"
             - \"dynamo.${BACKEND}\"
             - \"--model-path\"
+            - \"${MODEL_PATH}\"
+            - \"--served-model-name\"
             - \"${MODEL}\"
             - \"--tensor-parallel-size\"
             - \"${TOTAL_GPUS}\"
+            - \"--trust-remote-code\"
           volumeMounts:
             - name: model-cache
-              mountPath: ${PVC_MOUNT_PATH}"
+              mountPath: ${PVC_MOUNT_PATH}
+        volumes:
+          - name: model-cache
+            persistentVolumeClaim:
+              claimName: ${PVC_NAME}"
 
 # =============================================================================
 # BANNER
@@ -225,7 +262,7 @@ echo ""
 echo -e "${CYAN}╔════════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║${NC}  ${BOLD}🌳  Dynamo + Grove — Multinode Inference Made Simple  🌳${NC}      ${CYAN}║${NC}"
 echo -e "${CYAN}║${NC}                                                                ${CYAN}║${NC}"
-echo -e "${CYAN}║${NC}     ${MAGENTA}One DGD. Multiple nodes. Gang-scheduled. Topology-aware.${NC}   ${CYAN}║${NC}"
+echo -e "${CYAN}║${NC}     ${MAGENTA}One DGD. Multiple nodes. Hierarchical gang scheduling.${NC}     ${CYAN}║${NC}"
 echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 pause 3
@@ -276,15 +313,19 @@ echo ""
 narrate "Now consider the model we want to deploy: ${MODEL}"
 echo ""
 echo "   Models like this:"
+echo "   - DeepSeek-R1 (671B FP8)          → ~640 GB of weights"
 echo "   - DeepSeek-R1 (671B BF16)         → ~1.3 TB of weights"
-echo "   - DeepSeek-V3.2 (671B BF16)       → ~1.3 TB"
 echo "   - Llama-4-Maverick                → multi-node by design"
 echo ""
 echo "   A single H100 node = 8 × 80 GB = ${BOLD}640 GB${NC} of VRAM."
 echo ""
-echo -e "   ${RED}❌  The weights alone don't fit on one node.${NC}"
-echo "      And once you add KV cache + activations + expert routing for MoE,"
-echo "      even quantized variants want to span multiple nodes for throughput."
+echo -e "   ${RED}❌  Even FP8 671B fills a node — with no room for KV cache.${NC}"
+echo "      You need a second node just to serve a single user, let alone scale."
+echo ""
+echo -e "   ${DIM}(For this live demo we'll deploy ${MODEL} across ${NODES_PER_REPLICA} nodes${NC}"
+echo -e "   ${DIM} so we don't sit through 30 minutes of CUDA-graph capture.${NC}"
+echo -e "   ${DIM} The Grove story below is identical for R1 — just change the${NC}"
+echo -e "   ${DIM} model path and bump nodeCount.)${NC}"
 pause 5
 
 echo ""
@@ -339,15 +380,19 @@ echo "   ⚠️   ${BOLD}No cross-group startup ordering.${NC} Decode might come
 echo "        prefill workers it depends on are ready."
 echo "   ⚠️   ${BOLD}One scaling knob per group.${NC} You can't independently scale prefill"
 echo "        nodes vs. decode nodes within a single declarative spec."
-echo "   ⚠️   ${BOLD}No topology hints.${NC} Pods land wherever; cross-rack traffic is on you."
 echo "   ⚠️   ${BOLD}Default pod-by-pod scheduling.${NC} Without a gang scheduler underneath,"
 echo "        you can still deadlock when GPUs are tight."
 pause 7
 
 step_header "🌳" "Step 2 (cont): Option B — Grove"
 
-narrate "Grove is built specifically for disaggregated multinode inference."
-narrate "It's three Kubernetes resources, layered:"
+narrate "Grove's tagline: \"One API. Any inference architecture.\" It's a"
+narrate "general-purpose Kubernetes API for orchestrating ANY inference"
+narrate "workload — single-pod, agentic pipelines, single-node disagg, all the"
+narrate "way up to multinode disagg. It's where it really earns its keep — but"
+narrate "the same primitives apply everywhere."
+narrate ""
+narrate "Three Kubernetes resources, layered:"
 echo ""
 pause 2
 
@@ -385,10 +430,6 @@ echo "       is ready\" is a field, not a scripted readiness probe dance."
 echo ""
 echo "   ✅  ${BOLD}Independent multi-level autoscaling${NC} — scale prefill PCSGs and"
 echo "       decode PCSGs on different metrics, in the same DGD."
-echo ""
-echo "   ✅  ${BOLD}Network topology-aware placement${NC} — pack a PCSG inside one"
-echo "       NVLink domain or rack; spread replicas across domains for HA."
-echo "       Surfaced in Dynamo via the DGD \`topologyConstraint\` field."
 echo ""
 echo "   ✅  ${BOLD}Built on a gang scheduler${NC} (KAI / podgang) — no half-scheduled"
 echo "       deadlocks where 7 of 8 pods are running and 1 is pending forever."
@@ -539,52 +580,121 @@ echo -e "   ${BOLD}What to look for:${NC}"
 echo "   - Decode worker pods land on ${NODES_PER_REPLICA} different nodes"
 echo "     (one PCSG member per node — that's the multinode unit)."
 echo "   - Frontend lands wherever there's room — independent placement."
-echo ""
-echo "   In production you'd add ${CYAN}spec.topologyConstraint${NC} to pin the PCSG"
-echo "   inside one NVLink rack, and spread replicas across racks for HA."
 pause 5
 
 
 # =============================================================================
-# STEP 7 (optional): Chaos — kill a worker, watch the gang restart together
+# STEP 7 (optional): Scale out — hierarchical gang scheduling
 # =============================================================================
-if [[ "$SKIP_CHAOS" != true ]]; then
-    step_header "💥" "Step 7: Chaos — What Happens When a Worker Dies?"
+if [[ "$SKIP_SCALE" != true ]]; then
+    step_header "📈" "Step 7: Scale Out — Hierarchical Gang Scheduling"
 
-    narrate "Multinode workers are ALL-OR-NOTHING. If one pod in the gang dies,"
-    narrate "the rest are useless — they're a half-broken TP=${TOTAL_GPUS} worker"
-    narrate "that can't run inference. Grove enforces this: the gang restarts together."
+    narrate "Now the payoff. We have ONE multinode replica running (${NODES_PER_REPLICA} pods,"
+    narrate "${NODES_PER_REPLICA} nodes, gang-scheduled together). Let's scale to TWO replicas."
     echo ""
-    pause 3
+    narrate "What we expect Grove to do:"
+    echo ""
+    echo "   - Create a SECOND PodCliqueScalingGroup with ${NODES_PER_REPLICA} new pods."
+    echo "   - Hold those ${NODES_PER_REPLICA} new pods Pending until ALL of them can"
+    echo "     schedule together (the gang within the new PCSG)."
+    echo "   - Treat each PCSG as an independent gang — the existing replica keeps"
+    echo "     serving traffic regardless of what happens to the new one."
+    echo ""
+    echo "   ${BOLD}This is hierarchical gang scheduling:${NC} gang within a PCSG, and"
+    echo "   each PCSG independently gang-scheduled. One DGD field, two layers of gang."
+    pause 6
 
-    victim=$(kubectl get pods -n "$NAMESPACE" \
-        -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" \
-        --no-headers 2>/dev/null | grep -i "decode" | grep "Running" | head -1 | awk '{print $1}')
+    echo ""
+    show_command "kubectl patch dgd ${DGD_NAME} -n ${NAMESPACE} --type merge -p '{\"spec\":{\"services\":{\"decode\":{\"replicas\":2}}}}'"
+    kubectl patch dgd "$DGD_NAME" -n "$NAMESPACE" --type merge \
+        -p '{"spec":{"services":{"decode":{"replicas":2}}}}' 2>&1
+    echo ""
+    pause 2
 
-    if [[ -n "$victim" ]]; then
-        show_command "kubectl delete pod ${victim} -n ${NAMESPACE}"
-        kubectl delete pod "$victim" -n "$NAMESPACE" --wait=false 2>&1
+    narrate "Watching the second gang form..."
+    echo ""
+
+    SCALE_MAX_WAIT=300
+    s_elapsed=0
+    s_first=true
+    target_pods=$((NODES_PER_REPLICA * 2))
+
+    while [[ $s_elapsed -lt $SCALE_MAX_WAIT ]]; do
+        if [[ "$s_first" != true ]]; then
+            printf '\e[H\e[2J'
+        fi
+        s_first=false
+
+        echo -e "${BOLD}  📈 Step 7: Scaling decode 1 → 2 replicas${NC}"
+        echo -e "  ${DIM}Every 5s · ${s_elapsed}s elapsed${NC}"
         echo ""
-        narrate "Watch what happens to the OTHER decode pods..."
-        echo ""
-        pause 2
 
-        for i in 1 2 3; do
-            echo -e "${DIM}--- snapshot ${i}/3 ---${NC}"
+        show_command "kubectl get podcliquescalinggroup -n ${NAMESPACE}"
+        kubectl get podcliquescalinggroup -n "$NAMESPACE" 2>/dev/null \
+            | grep -E "NAME|${DGD_NAME}" || true
+        echo ""
+
+        show_command "kubectl get pods -n ${NAMESPACE} -l nvidia.com/dynamo-graph-deployment-name=${DGD_NAME} -o wide"
+        decode_lines=$(kubectl get pods -n "$NAMESPACE" \
+            -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" \
+            -o wide --no-headers 2>/dev/null | grep -i decode || echo "")
+        if [[ -n "$decode_lines" ]]; then
             kubectl get pods -n "$NAMESPACE" \
-                -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" 2>/dev/null \
+                -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" -o wide 2>/dev/null \
                 | grep -E "NAME|decode"
-            echo ""
-            sleep 4
-        done
+        fi
+        echo ""
 
-        echo "   ${BOLD}Compare to LWS or a vanilla Deployment:${NC} you'd lose 1 pod and the"
-        echo "   other ${NODES_PER_REPLICA} would keep running, holding GPUs but unable to serve."
-        echo "   Grove's gang-restart prevents that wasted state."
-        pause 5
-    else
-        echo -e "   ${YELLOW}(no Running decode pod found to demonstrate chaos)${NC}"
-    fi
+        if [[ -n "$decode_lines" ]]; then
+            total=$(echo "$decode_lines" | wc -l | tr -d ' ')
+            pending=$(echo "$decode_lines" | grep -c "Pending" || true)
+            running=$(echo "$decode_lines" | grep -c "Running" || true)
+            ready=$(echo "$decode_lines" | awk '{print $2}' | grep -c "1/1" || true)
+
+            echo -e "   ${CYAN}Decode pods: ${BOLD}${ready}/${total} ready  (${running} running, ${pending} pending)${NC}"
+
+            # Group pods by PCSG. Pod names look like:
+            #   <dgd>-0-decode-<replicaIdx>-decode-<role>-<hash>
+            # so the replica index is the field right after "-decode-".
+            echo ""
+            echo -e "   ${DIM}Grouped by PCSG (replica):${NC}"
+            echo "$decode_lines" | awk '{
+                name=$1; node=$7
+                # extract the number that follows the FIRST "-decode-"
+                n=name
+                sub(/.*-decode-/, "", n)   # n now starts with "<idx>-decode-..."
+                split(n, a, "-")
+                printf "      replica %s  →  %-55s  on %s\n", a[1], $1, node
+            }' | sort
+
+            if [[ "$pending" -gt 0 && "$running" -eq "$NODES_PER_REPLICA" ]]; then
+                echo ""
+                echo -e "   ${MAGENTA}▸ New gang is Pending as a unit${NC} — KAI is reserving GPUs for ALL ${NODES_PER_REPLICA} new pods together"
+                echo -e "   ${MAGENTA}▸ Existing replica keeps serving${NC} — independent gangs, independent fates"
+            elif [[ "$ready" == "$target_pods" ]]; then
+                echo ""
+                echo -e "   ${GREEN}▸ Both gangs ready${NC} — ${target_pods} pods across $((NODES_PER_REPLICA * 2)) nodes, two independent multinode workers"
+                break
+            fi
+        fi
+
+        sleep 5
+        s_elapsed=$((s_elapsed + 5))
+    done
+
+    echo ""
+    echo -e "   ${BOLD}What just happened:${NC}"
+    echo "   - You changed ${CYAN}replicas: 1 → 2${NC}. One field."
+    echo "   - Grove created a second PCSG with its own ${NODES_PER_REPLICA}-pod gang."
+    echo "   - Pods of the new gang stayed Pending TOGETHER until the scheduler"
+    echo "     could admit them as a unit. No half-scheduled deadlock."
+    echo "   - The original replica kept serving the whole time — gangs are"
+    echo "     independent, so scaling can't break what's already running."
+    echo ""
+    echo -e "   ${DIM}If we had asked for replicas: 3 here (24 GPUs / 3 nodes), the third${NC}"
+    echo -e "   ${DIM}gang would sit Pending as a whole until 8 GPUs free up — never${NC}"
+    echo -e "   ${DIM}half-scheduled, never wasting GPUs. That's the gang guarantee.${NC}"
+    pause 6
 fi
 
 
@@ -597,19 +707,32 @@ narrate "Final check — let's actually talk to the multinode worker."
 echo ""
 pause 2
 
-# Wait for DGD to be ready again post-chaos
-echo "   Waiting up to 5 min for DGD to be ready..."
-for i in $(seq 1 60); do
-    state=$(kubectl get dgd "$DGD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.state}' 2>/dev/null || echo "")
-    if [[ "$state" == "successful" || "$state" == "ready" ]]; then
+# Wait for the frontend + at least one decode replica to be Running 1/1.
+# Note: after a scale-out, the Dynamo operator's DGD.status.state may stay
+# "pending" even when Grove has admitted both gangs and all pods are 1/1 Running
+# (operator status lags PCSG availability). Pod readiness is the real signal
+# we care about for serving traffic.
+echo "   Waiting up to 2 min for serving pods to be ready..."
+for i in $(seq 1 24); do
+    fe_ready=$(kubectl get pods -n "$NAMESPACE" \
+        -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME},nvidia.com/dynamo-component-type=frontend" \
+        --no-headers 2>/dev/null | awk '$2=="1/1" && $3=="Running"' | wc -l | tr -d ' ')
+    decode_ready=$(kubectl get pods -n "$NAMESPACE" \
+        -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" \
+        --no-headers 2>/dev/null | grep -- '-decode-' | awk '$2=="1/1" && $3=="Running"' | wc -l | tr -d ' ')
+    if [[ "${fe_ready:-0}" -ge 1 && "${decode_ready:-0}" -ge 1 ]]; then
         break
     fi
     sleep 5
 done
 
-frontend_svc=$(kubectl get svc -n "$NAMESPACE" \
-    -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" --no-headers -o name 2>/dev/null \
-    | grep -i frontend | head -1 | sed 's|service/||')
+# Frontend svc is named "<dgd>-frontend" by the Dynamo operator.
+# (It is NOT labeled with nvidia.com/dynamo-graph-deployment-name on this version.)
+frontend_svc="${DGD_NAME}-frontend"
+if ! kubectl get svc "$frontend_svc" -n "$NAMESPACE" >/dev/null 2>&1; then
+    frontend_svc=$(kubectl get svc -n "$NAMESPACE" --no-headers -o name 2>/dev/null \
+        | grep -i "${DGD_NAME}.*frontend" | head -1 | sed 's|service/||')
+fi
 
 if [[ -z "$frontend_svc" ]]; then
     echo -e "   ${YELLOW}Frontend service not found — skipping live request.${NC}"
@@ -671,15 +794,15 @@ echo -e "   The problem:  ${BOLD}models that don't fit on one node.${NC}"
 echo ""
 echo "   The options:"
 echo "     • Vanilla Deployment   →  can't span nodes as one worker"
-echo "     • LWS                  →  one role, one knob, no gang scheduler, no topology"
+echo "     • LWS                  →  one role, one knob, no gang scheduler"
 echo "     • ${BOLD}Grove (via Dynamo DGD)${NC}  →  full disagg system in one spec"
 echo ""
 echo "   Grove gives you, in one DGD:"
-echo "     ✅  PodCliqueSet           — the whole disagg system as one object"
+echo "     ✅  PodCliqueSet           — the whole inference system as one object"
 echo "     ✅  PodCliqueScalingGroup  — multinode workers as one gang"
-echo "     ✅  Gang scheduling        — no half-scheduled GPU deadlocks"
+echo "     ✅  Hierarchical gang      — gang within a PCSG, gangs as independent units"
+echo "     ✅  No half-scheduled      — pods of a gang admit together or wait together"
 echo "     ✅  Startup ordering       — declarative, not scripted"
-echo "     ✅  Topology hints         — pack on NVLink, spread for HA"
 echo "     ✅  Independent autoscale  — prefill and decode on their own metrics"
 echo ""
 echo -e "   ${BOLD}You wrote one field — multinode.nodeCount: ${NODES_PER_REPLICA}.${NC}"
