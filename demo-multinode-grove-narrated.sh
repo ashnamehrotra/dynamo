@@ -43,13 +43,6 @@ set -e
 # Configuration
 # =============================================================================
 NAMESPACE="${NAMESPACE:-dynamo-test}"
-# Demo model: Llama-3.1-70B-FP8.
-# Why this model and not DeepSeek-R1 (the motivating example in Step 1)?
-#   On AKS H100s without IB, NCCL falls back to TCP. R1's 671B MoE init does
-#   so many cross-node collectives during cuda-graph capture that startup over
-#   TCP takes 30+ min. A dense 70B model boots in ~3 min and demos the IDENTICAL
-#   Grove orchestration story (PCS, PCSG, gang scheduling, topology). The DGD
-#   spec is the same — change MODEL/MODEL_PATH and bump nodeCount for R1.
 MODEL="${MODEL:-nvidia/Llama-3.1-70B-Instruct-FP8}"
 BACKEND="${BACKEND:-sglang}"
 DGD_NAME="${DGD_NAME:-multinode-grove-demo}"
@@ -202,16 +195,10 @@ spec:
     # so workers don't have to hit the HuggingFace API.
     - name: HF_HOME
       value: ${PVC_MOUNT_PATH}
-    # ── NCCL tuning for AKS H100 multinode ──
-    # AKS Azure-overlay CNI doesn't expose IB to NCCL's auto-detect;
-    # force TCP over the pod's eth0 and disable IB so NCCL doesn't
-    # spin forever trying to negotiate a transport that won't work.
-    - name: NCCL_IB_DISABLE
-      value: \"1\"
-    - name: NCCL_SOCKET_IFNAME
-      value: eth0
-    - name: GLOO_SOCKET_IFNAME
-      value: eth0
+    # The Azure ND_H100_v5 pool exposes NDR InfiniBand to pods, so we let
+    # NCCL auto-detect the IB fabric for cross-node tensor parallel — that's
+    # what makes TP across nodes performant. Keep NCCL_DEBUG=INFO so the
+    # transport (IB vs. socket) is visible in the worker logs.
     - name: NCCL_DEBUG
       value: INFO
 
