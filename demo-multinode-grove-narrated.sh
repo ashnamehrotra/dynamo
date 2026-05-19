@@ -112,9 +112,19 @@ done
 # =============================================================================
 # Helpers
 # =============================================================================
+# SPEED multiplies all pause durations and the type-out delay below.
+# Bump above 1.0 for slower / easier-to-follow pacing (good for recordings),
+# drop below 1.0 to fly through. Default 1.4 was tuned from asciinema review
+# where viewers said a few sections were hard to follow.
+SPEED="${SPEED:-1.4}"
+
 narrate()      { echo -e "\n${NAR}# $1${NC}"; }
 show_command() { echo -e "${GREEN}❯${NC} $1"; }
-pause()        { sleep "${1:-2}"; }
+pause()        {
+    local d="${1:-2}"
+    # awk handles float multiplication portably on macOS bash
+    sleep "$(awk -v d="$d" -v s="$SPEED" 'BEGIN { printf "%.2f", d*s }')"
+}
 
 step_header() {
     local emoji="$1" title="$2"
@@ -126,7 +136,9 @@ step_header() {
 }
 
 type_yaml() {
-    while IFS= read -r line; do echo "$line"; sleep 0.04; done <<< "$1"
+    local delay
+    delay=$(awk -v s="$SPEED" 'BEGIN { printf "%.3f", 0.05*s }')
+    while IFS= read -r line; do echo "$line"; sleep "$delay"; done <<< "$1"
 }
 
 # =============================================================================
@@ -273,7 +285,7 @@ echo "   We'll cover three things:"
 echo ""
 echo "   1. 🧱  Why a normal Kubernetes Deployment can't help."
 echo "   2. 🤔  LeaderWorkerSet (LWS) — the obvious fallback — and where it stops."
-echo "   3. 🌳  Grove — what Dynamo actually uses, and why."
+echo "   3. 🌳  Grove — Dynamo's preferred solution for k8s orchestration."
 echo ""
 pause 5
 
@@ -317,7 +329,7 @@ echo "   - DeepSeek-R1 (671B FP8)          → ~640 GB of weights"
 echo "   - DeepSeek-R1 (671B BF16)         → ~1.3 TB of weights"
 echo "   - Llama-4-Maverick                → multi-node by design"
 echo ""
-echo "   A single H100 node = 8 × 80 GB = ${BOLD}640 GB${NC} of VRAM."
+echo -e "   A single H100 node = 8 × 80 GB = ${BOLD}640 GB${NC} of VRAM."
 echo ""
 echo -e "   ${RED}❌  Even FP8 671B fills a node — with no room for KV cache.${NC}"
 echo "      You need a second node just to serve a single user, let alone scale."
@@ -331,18 +343,18 @@ pause 5
 echo ""
 narrate "The naive fix is a Kubernetes Deployment with replicas: 8. That doesn't work."
 echo ""
-echo "   ${BOLD}Why a vanilla Deployment fails for multinode inference:${NC}"
+echo -e "   ${BOLD}Why a vanilla Deployment fails for multinode inference:${NC}"
 echo ""
-echo "   - ${RED}A Pod runs on ONE node.${NC} Tensor parallelism across nodes needs"
+echo -e "   - ${RED}A Pod runs on ONE node.${NC} Tensor parallelism across nodes needs"
 echo "     N pods that boot together, find each other, and form one logical worker."
-echo "   - ${RED}No gang scheduling.${NC} If 7 pods schedule and the 8th pends on GPUs,"
+echo -e "   - ${RED}No gang scheduling.${NC} If 7 pods schedule and the 8th pends on GPUs,"
 echo "     you've burned 7 nodes' worth of GPUs holding nothing."
-echo "   - ${RED}No startup ordering.${NC} Workers must reach the leader on a known address"
+echo -e "   - ${RED}No startup ordering.${NC} Workers must reach the leader on a known address"
 echo "     before the leader can call \`init_process_group\`."
-echo "   - ${RED}No topology awareness.${NC} Pods can land in different racks; NCCL"
+echo -e "   - ${RED}No topology awareness.${NC} Pods can land in different racks; NCCL"
 echo "     all-reduce across the wrong fabric tanks throughput."
 echo ""
-echo "   ${BOLD}You need an orchestrator that treats N pods × N nodes as one unit.${NC}"
+echo -e "   ${BOLD}You need an orchestrator that treats N pods × N nodes as one unit.${NC}"
 pause 6
 
 
@@ -374,25 +386,35 @@ echo "   ✅  Stable hostnames so the leader can find workers"
 echo "   ✅  Basic gang behavior — the group restarts together on failure"
 echo ""
 echo -e "   ${YELLOW}Where LWS stops:${NC}"
-echo "   ⚠️   ${BOLD}Single role per group.${NC} Frontend, prefill, decode all need separate"
-echo "        LWS objects, glued together by you with services and config."
-echo "   ⚠️   ${BOLD}No cross-group startup ordering.${NC} Decode might come up before the"
-echo "        prefill workers it depends on are ready."
-echo "   ⚠️   ${BOLD}One scaling knob per group.${NC} You can't independently scale prefill"
-echo "        nodes vs. decode nodes within a single declarative spec."
-echo "   ⚠️   ${BOLD}Default pod-by-pod scheduling.${NC} Without a gang scheduler underneath,"
-echo "        you can still deadlock when GPUs are tight."
+echo -e "   ⚠️   ${BOLD}Multinode units may not be leader-worker shaped.${NC} LWS uses"
+echo "        leader-worker groups to describe a multinode scaling unit. That works"
+echo "        for true leader-worker workloads, but gets awkward for disaggregated"
+echo "        serving: if prefill and decode are forced into one LWS, they can be"
+echo "        scheduled together, but cannot scale independently and the API gets clunky."
+echo ""
+echo -e "   ⚠️   ${BOLD}Separate LWS objects lose cross-component scheduling guarantees.${NC} Modeling"
+echo "        prefill and decode separately avoids that awkward fit and preserves"
+echo "        independent scaling. Each LWS may still be gang-scheduled internally,"
+echo "        but there is no hierarchical gang scheduling or topology awareness"
+echo "        between them, so in the worst case you can get prefill with no decode."
+echo ""
+echo -e "   ⚠️   ${BOLD}Startup ordering is tied to creation, not startup intent.${NC}"
+echo "        LWS can order pod creation, but creation order is not startup or"
+echo "        readiness order. You want to gang-schedule the unit, then separately"
+echo "        say whether leaders or workers should start first."
 pause 7
 
 step_header "🌳" "Step 2 (cont): Option B — Grove"
 
-narrate "Grove's tagline: \"One API. Any inference architecture.\" It's a"
-narrate "general-purpose Kubernetes API for orchestrating ANY inference"
-narrate "workload — single-pod, agentic pipelines, single-node disagg, all the"
-narrate "way up to multinode disagg. It's where it really earns its keep — but"
-narrate "the same primitives apply everywhere."
+narrate "Grove is an open-source, Kubernetes-native API for describing an AI"
+narrate "inference service — a modular component of Dynamo that can also run"
+narrate "standalone or integrate with other inference frameworks. Where standard"
+narrate "Kubernetes resources describe individual pods and services, Grove lets"
+narrate "you describe an entire inference serving system as one object: routing,"
+narrate "prefill, decode, leader-worker groups, startup dependencies, and scaling"
+narrate "boundaries — all in a single workload specification."
 narrate ""
-narrate "Three Kubernetes resources, layered:"
+narrate "Three hierarchical Kubernetes resources do the modeling:"
 echo ""
 pause 2
 
@@ -403,11 +425,11 @@ cat <<'EOF'
    │                                                             │
    │   ┌──────────────┐   ┌────────────────────────────────────┐ │
    │   │  PodClique   │   │   PodCliqueScalingGroup (PCSG)     │ │
-   │   │  (Frontend)  │   │   ┌──────────┐    ┌──────────┐    │ │
-   │   │              │   │   │PodClique │    │PodClique │    │ │
-   │   │  1 pod       │   │   │ (decode  │    │ (decode  │    │ │
-   │   │              │   │   │  leader) │    │  worker) │    │ │
-   │   └──────────────┘   │   └──────────┘    └──────────┘    │ │
+   │   │  (Frontend)  │   │    ┌──────────┐    ┌──────────┐    │ │
+   │   │              │   │    │PodClique │    │PodClique │    │ │
+   │   │  1 pod       │   │    │ (decode  │    │ (decode  │    │ │
+   │   │              │   │    │  leader) │    │  worker) │    │ │
+   │   └──────────────┘   │    └──────────┘    └──────────┘    │ │
    │                      │   N pods, scheduled & scaled       │ │
    │                      │   together as a multinode unit     │ │
    │                      └────────────────────────────────────┘ │
@@ -418,21 +440,28 @@ pause 5
 echo ""
 echo -e "   ${GREEN}What Grove adds on top of LWS:${NC}"
 echo ""
-echo "   ✅  ${BOLD}Multi-role in one spec${NC} — frontend + prefill + decode in one PCS."
+echo -e "   ✅  ${BOLD}Multi-component in one spec${NC} — frontend + prefill + decode in one PCS."
 echo "       The whole disagg system is one k8s object, not three."
 echo ""
-echo "   ✅  ${BOLD}Flexible gang scheduling${NC} — gang the entire PCS (nothing runs"
+echo -e "   ✅  ${BOLD}Flexible gang scheduling${NC} — gang the entire PCS (nothing runs"
 echo "       until the whole stack can schedule), or gang inside a PCSG only"
 echo "       (multinode workers boot together but frontend can come up early)."
 echo ""
-echo "   ✅  ${BOLD}Declarative startup dependencies${NC} — \"decode starts after prefill"
-echo "       is ready\" is a field, not a scripted readiness probe dance."
+echo -e "   ✅  ${BOLD}Hierarchical gang scheduling${NC} — the workload can express"
+echo "       service-level viability, e.g. require a complete prefill AND a complete"
+echo "       decode before the deployment is considered ready to serve. The scheduler"
+echo "       won't admit complete-but-unbalanced capacity that can't handle an end-to-end request."
 echo ""
-echo "   ✅  ${BOLD}Independent multi-level autoscaling${NC} — scale prefill PCSGs and"
-echo "       decode PCSGs on different metrics, in the same DGD."
+echo -e "   ✅  ${BOLD}Declarative startup dependencies${NC} — \"decode starts after prefill"
+echo "       is ready\" is a field (cliqueStartupType / startsAfter), not a"
+echo "       scripted readiness probe dance or an init container."
 echo ""
-echo "   ✅  ${BOLD}Built on a gang scheduler${NC} (KAI / podgang) — no half-scheduled"
-echo "       deadlocks where 7 of 8 pods are running and 1 is pending forever."
+echo -e "   ✅  ${BOLD}Independent multi-level autoscaling${NC} — scale prefill PCSGs and"
+echo "       decode PCSGs on different metrics, in the same DGD. Planner-driven"
+echo "       scale-out adds a complete, gang-admitted instance — not loose pods."
+echo ""
+echo -e "   ✅  ${BOLD}Generates PodGang resources${NC} for a gang-aware scheduler such as"
+echo "       KAI — no half-scheduled deadlocks where 7 of 8 pods run and 1 pends forever."
 pause 8
 
 
@@ -486,78 +515,33 @@ narrate "Watch closely: with Grove, pods stay Pending until the WHOLE gang"
 narrate "can schedule. Then they all transition together. No half-scheduled"
 narrate "deadlocks where 7 nodes hold GPUs waiting for an 8th that never comes."
 echo ""
+narrate "We'll use \`watch -n1\` to refresh the view every second. It exits"
+narrate "automatically after the live-watch window; then we wait for the model"
+narrate "weights to finish loading."
+echo ""
 pause 3
 
-WATCH_MAX_WAIT=900
-elapsed=0
-_first=true
+# Live watch window: ~2 min of 1-Hz refresh shows the gang go from
+# Pending -> all-admitted -> ContainerCreating -> Running together.
+WATCH_DURATION=120
+show_command "watch -n 1 'kubectl get podcliqueset,podclique,podcliquescalinggroup,pods -n ${NAMESPACE} -l nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}'"
+timeout "${WATCH_DURATION}s" watch -n 1 -t \
+    "kubectl get podcliqueset,podclique,podcliquescalinggroup,pods -n ${NAMESPACE} -l nvidia.com/dynamo-graph-deployment-name=${DGD_NAME} -o wide 2>/dev/null" \
+    || true
 
-while [[ $elapsed -lt $WATCH_MAX_WAIT ]]; do
-    if [[ "$_first" != true ]]; then
-        printf '\e[H\e[2J'
-    fi
-    _first=false
+# Now wait for the DGD to reach a ready state (model weights load).
+echo ""
+narrate "Gang is admitted. Waiting for the model weights to finish loading..."
+show_command "kubectl wait dgd ${DGD_NAME} -n ${NAMESPACE} --for=jsonpath='{.status.state}'=successful --timeout=900s"
+kubectl wait dgd "$DGD_NAME" -n "$NAMESPACE" \
+    --for=jsonpath='{.status.state}'=successful --timeout=900s 2>/dev/null \
+    || kubectl wait dgd "$DGD_NAME" -n "$NAMESPACE" \
+        --for=jsonpath='{.status.state}'=ready --timeout=60s 2>/dev/null \
+    || true
 
-    echo -e "${BOLD}  👀 Step 5: Watching Grove Primitives${NC}"
-    echo -e "  ${DIM}Every 5s · ${elapsed}s elapsed${NC}"
-    echo ""
-
-    show_command "kubectl get podcliqueset,podclique,podcliquescalinggroup -n ${NAMESPACE}"
-    kubectl get podcliqueset,podclique,podcliquescalinggroup -n "$NAMESPACE" 2>/dev/null \
-        | grep -E "NAME|${DGD_NAME}" || true
-    echo ""
-
-    show_command "kubectl get pods -n ${NAMESPACE} -l nvidia.com/dynamo-graph-deployment-name=${DGD_NAME} -o wide"
-    pod_lines=$(kubectl get pods -n "$NAMESPACE" \
-        -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" \
-        -o wide --no-headers 2>/dev/null || echo "")
-    if [[ -n "$pod_lines" ]]; then
-        kubectl get pods -n "$NAMESPACE" \
-            -l "nvidia.com/dynamo-graph-deployment-name=${DGD_NAME}" -o wide 2>/dev/null
-    else
-        echo "   (no pods yet — operator is still creating Grove resources)"
-    fi
-    echo ""
-
-    # Narrate the current phase
-    if [[ -z "$pod_lines" ]]; then
-        echo -e "   ${MAGENTA}▸ Operator is materializing Grove resources${NC}"
-    else
-        total=$(echo "$pod_lines" | wc -l | tr -d ' ')
-        pending=$(echo "$pod_lines" | grep -c "Pending" || true)
-        creating=$(echo "$pod_lines" | grep -c "ContainerCreating\|Init:" || true)
-        running=$(echo "$pod_lines" | grep -c "Running" || true)
-        ready=$(echo "$pod_lines" | awk '{print $2}' | grep -c "1/1" || true)
-
-        echo -e "   ${CYAN}Pods: ${BOLD}${ready}/${total} ready  (${running} running, ${creating} creating, ${pending} pending)${NC}"
-
-        if [[ "$pending" == "$total" && "$total" -gt 0 ]]; then
-            echo -e "   ${MAGENTA}▸ Gang-scheduling${NC} — KAI is reserving GPUs for the whole gang at once"
-        elif [[ "$creating" -gt 0 ]]; then
-            echo -e "   ${MAGENTA}▸ All gang members admitted${NC} — pods transitioned together (this is the gang win)"
-        elif [[ "$ready" == "$total" && "$total" -gt 0 ]]; then
-            echo -e "   ${GREEN}▸ Gang fully ready${NC}"
-        elif [[ "$running" -gt 0 ]]; then
-            echo -e "   ${MAGENTA}▸ Loading model weights from PVC${NC}"
-        fi
-
-        # Show node distribution
-        echo ""
-        echo -e "   ${DIM}Node placement:${NC}"
-        echo "$pod_lines" | awk '{print "      "$1" → "$7}' | head -10
-    fi
-
-    # Check DGD readiness
-    dgd_ready=$(kubectl get dgd "$DGD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.state}' 2>/dev/null || echo "")
-    if [[ "$dgd_ready" == "successful" || "$dgd_ready" == "ready" ]]; then
-        echo ""
-        echo -e "   ${GREEN}✅ DGD is ${dgd_ready} — multinode worker is online${NC}"
-        break
-    fi
-
-    sleep 5
-    elapsed=$((elapsed + 5))
-done
+dgd_ready=$(kubectl get dgd "$DGD_NAME" -n "$NAMESPACE" -o jsonpath='{.status.state}' 2>/dev/null || echo "")
+echo ""
+echo -e "   ${GREEN}✅ DGD is ${dgd_ready:-running} — multinode worker is online${NC}"
 
 pause 3
 
@@ -600,8 +584,10 @@ if [[ "$SKIP_SCALE" != true ]]; then
     echo "   - Treat each PCSG as an independent gang — the existing replica keeps"
     echo "     serving traffic regardless of what happens to the new one."
     echo ""
-    echo "   ${BOLD}This is hierarchical gang scheduling:${NC} gang within a PCSG, and"
-    echo "   each PCSG independently gang-scheduled. One DGD field, two layers of gang."
+    echo -e "   ${BOLD}This shows Grove's layered scaling boundaries:${NC} gang within a PCSG"
+echo "   (the multinode worker), and each PCSG admitted as an independent unit."
+echo "   Scale-out doesn't add loose pods — it adds a complete, gang-admitted"
+echo "   inference instance that's schedulable and ready to serve."
     pause 6
 
     echo ""
@@ -684,7 +670,7 @@ if [[ "$SKIP_SCALE" != true ]]; then
 
     echo ""
     echo -e "   ${BOLD}What just happened:${NC}"
-    echo "   - You changed ${CYAN}replicas: 1 → 2${NC}. One field."
+    echo -e "   - You changed ${CYAN}replicas: 1 → 2${NC}. One field."
     echo "   - Grove created a second PCSG with its own ${NODES_PER_REPLICA}-pod gang."
     echo "   - Pods of the new gang stayed Pending TOGETHER until the scheduler"
     echo "     could admit them as a unit. No half-scheduled deadlock."
@@ -795,12 +781,12 @@ echo ""
 echo "   The options:"
 echo "     • Vanilla Deployment   →  can't span nodes as one worker"
 echo "     • LWS                  →  one role, one knob, no gang scheduler"
-echo "     • ${BOLD}Grove (via Dynamo DGD)${NC}  →  full disagg system in one spec"
+echo -e "     • ${BOLD}Grove (via Dynamo DGD)${NC}  →  full disagg system in one spec"
 echo ""
 echo "   Grove gives you, in one DGD:"
 echo "     ✅  PodCliqueSet           — the whole inference system as one object"
 echo "     ✅  PodCliqueScalingGroup  — multinode workers as one gang"
-echo "     ✅  Hierarchical gang      — gang within a PCSG, gangs as independent units"
+echo "     ✅  Hierarchical gang      — gang scheduling at multiple layers, both within PCSGs and between them"
 echo "     ✅  No half-scheduled      — pods of a gang admit together or wait together"
 echo "     ✅  Startup ordering       — declarative, not scripted"
 echo "     ✅  Independent autoscale  — prefill and decode on their own metrics"
