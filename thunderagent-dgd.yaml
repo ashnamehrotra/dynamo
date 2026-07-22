@@ -1,0 +1,107 @@
+apiVersion: nvidia.com/v1alpha1
+kind: DynamoGraphDeployment
+metadata:
+  name: thunderagent-demo
+  namespace: dynamo-system
+spec:
+  pvcs:
+  - create: false
+    name: model-cache
+    size: '0'
+  services:
+    Frontend:
+      componentType: frontend
+      envFromSecret: hf-token-secret
+      extraPodSpec:
+        mainContainer:
+          args:
+          - --model-name
+          - Qwen/Qwen3-0.6B
+          - --model-path
+          - /opt/models/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca
+          command:
+          - python3
+          - -m
+          - dynamo.frontend
+          env:
+          - name: HF_HOME
+            value: /opt/models
+          image: docker.io/ashnam/dynamo-vllm-runtime:thunderagent
+          name: ''
+          resources: {}
+      replicas: 1
+      volumeMounts:
+      - mountPoint: /opt/models
+        name: model-cache
+    VllmDecodeWorker:
+      componentType: worker
+      envFromSecret: hf-token-secret
+      extraPodSpec:
+        mainContainer:
+          args:
+          - --tensor-parallel-size
+          - '1'
+          - --pipeline-parallel-size
+          - '1'
+          - --data-parallel-size
+          - '1'
+          - --kv-cache-dtype
+          - auto
+          - --max-model-len
+          - '6500'
+          - --max-num-seqs
+          - '512'
+          - --max-num-batched-tokens
+          - '6012'
+          - --model
+          - /opt/models/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca
+          - --served-model-name
+          - Qwen/Qwen3-0.6B
+          - --kv-events-config
+          - '{"publisher":"zmq","topic":"kv-events","endpoint":"tcp://*:5571","enable_kv_cache_events":true}'
+          command:
+          - python3
+          - -m
+          - dynamo.vllm
+          env:
+          - name: HF_HOME
+            value: /opt/models
+          image: docker.io/ashnam/dynamo-vllm-runtime:thunderagent
+          name: ''
+          resources: {}
+          workingDir: /workspace/examples/backends/vllm
+      replicas: 1
+      resources:
+        limits:
+          gpu: '1'
+        requests:
+          custom:
+            ephemeral-storage: 2Gi
+          gpu: '1'
+      volumeMounts:
+      - mountPoint: /opt/models
+        name: model-cache
+    ThunderAgentRouter:
+      componentType: router
+      replicas: 1
+      envFromSecret: hf-token-secret
+      extraPodSpec:
+        mainContainer:
+          image: docker.io/ashnam/dynamo-vllm-runtime:thunderagent
+          command:
+          - /bin/sh
+          - -c
+          args:
+          - python3 -m dynamo.thunderagent_router --endpoint dynamo.backend.generate
+            --model-name Qwen/Qwen3-0.6B --model-path /opt/models/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca
+            --router-block-size 16 --router-reset-states --pause-threshold 0.05 --pause-target
+            0.02 --soft-demote-threshold 0.03 --resume-hysteresis 0.01 --scheduler-interval-seconds
+            5.0
+          env:
+          - name: HF_HOME
+            value: /opt/models
+      volumeMounts:
+      - name: model-cache
+        mountPoint: /opt/models
+status:
+  state: ''

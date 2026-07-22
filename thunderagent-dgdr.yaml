@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Step 1: DGDR — profiles the model and generates a base DGD.
+# autoApply is false so we can inject the ThunderAgent router before deploying.
+apiVersion: nvidia.com/v1beta1
+kind: DynamoGraphDeploymentRequest
+metadata:
+  name: thunderagent-demo
+  namespace: dynamo-system
+spec:
+  model: Qwen/Qwen3-0.6B
+  backend: vllm
+  image: "nvcr.io/nvidia/ai-dynamo/dynamo-planner:1.2.1"
+  autoApply: false
+  modelCache:
+    pvcName: model-cache
+    pvcMountPath: /opt/models
+  overrides:
+    dgd:
+      apiVersion: nvidia.com/v1alpha1
+      kind: DynamoGraphDeployment
+      spec:
+        services:
+          Frontend:
+            extraPodSpec:
+              mainContainer:
+                image: docker.io/ashnam/dynamo-vllm-runtime:thunderagent
+                env:
+                  - name: HF_HOME
+                    value: /opt/models
+          VllmDecodeWorker:
+            extraPodSpec:
+              mainContainer:
+                image: docker.io/ashnam/dynamo-vllm-runtime:thunderagent
+                env:
+                  - name: HF_HOME
+                    value: /opt/models
