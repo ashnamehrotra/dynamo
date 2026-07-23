@@ -4,6 +4,8 @@
 """Router CLI parsing, config, and assembly for the standalone router."""
 
 import argparse
+import logging
+import os
 from typing import Optional
 
 from dynamo.common.configuration.arg_group import ArgGroup
@@ -43,6 +45,21 @@ class DynamoRouterConfig(KvRouterConfigBase, AicPerfConfigBase):
                 "Expected format: namespace.component.endpoint"
             )
         self.namespace = parts[0]
+
+        # On K8s, the operator sets DYN_NAMESPACE to the actual deployment
+        # namespace (e.g. "dynamo-system-myapp-abc123").  Workers publish
+        # their MDC under that namespace, so the router must subscribe to
+        # the same one.  Override the namespace parsed from ``--endpoint``
+        # when DYN_NAMESPACE is set and differs.
+        dyn_namespace = os.environ.get("DYN_NAMESPACE")
+        if dyn_namespace and dyn_namespace != self.namespace:
+            logger = logging.getLogger(__name__)
+            old_endpoint = self.endpoint
+            self.endpoint = f"{dyn_namespace}.{parts[1]}.{parts[2]}"
+            self.namespace = dyn_namespace
+            logger.info(
+                "DYN_NAMESPACE override: %s -> %s", old_endpoint, self.endpoint
+            )
         if self.serve_indexer and self.use_remote_indexer:
             raise ValueError(
                 "--serve-indexer and --use-remote-indexer are mutually exclusive"
