@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: model-download-minimax-m2
+  namespace: default
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      restartPolicy: OnFailure
+      nodeSelector:
+        agentpool: ndh100pool
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim:
+          claimName: pvc-lustre-dynamo
+      containers:
+      - name: downloader
+        image: python:3.10-slim
+        command: ["sh", "-c"]
+        args:
+        - |
+          set -eux
+          pip install --no-cache-dir huggingface_hub==1.16.4
+          pip uninstall -y hf-xet || true
+          until hf download MiniMaxAI/MiniMax-M2.7; do
+            echo "download attempt failed; retrying in 5m..."
+            sleep 300
+          done
+          echo "MiniMax-M2.7 download complete"
+        env:
+        - name: HF_HOME
+          value: /mnt/model-cache
+        - name: HF_HUB_DISABLE_XET
+          value: "1"
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token-secret
+              key: HF_TOKEN
+        volumeMounts:
+        - name: model-cache
+          mountPath: /mnt/model-cache
+        resources:
+          requests:
+            memory: 4Gi
+            cpu: "2"
+          limits:
+            memory: 8Gi
+            cpu: "4"

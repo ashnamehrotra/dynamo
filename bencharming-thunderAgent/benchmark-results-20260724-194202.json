@@ -1,0 +1,239 @@
+{
+  "timestamp": "2026-07-24T19:42:02",
+  "model": "MiniMaxAI/MiniMax-M2",
+  "config": {
+    "num_prompts": 90,
+    "concurrency": 8,
+    "max_tokens": 256
+  },
+  "single_turn": {
+    "thunderagent": {
+      "label": "ThunderAgent",
+      "type": "single-turn",
+      "successful": 90,
+      "wall_time_s": 29.11,
+      "throughput_rps": 3.09,
+      "avg_ttft_ms": 366.8,
+      "p50_ttft_ms": 300.2,
+      "p99_ttft_ms": 942.3,
+      "avg_tps": 103.3
+    },
+    "kvrouter": {
+      "label": "KvRouter",
+      "type": "single-turn",
+      "successful": 90,
+      "wall_time_s": 28.49,
+      "throughput_rps": 3.16,
+      "avg_ttft_ms": 381.6,
+      "p50_ttft_ms": 297.8,
+      "p99_ttft_ms": 1180.0,
+      "avg_tps": 104.9
+    }
+  },
+  "multi_turn": {
+    "thunderagent": {
+      "label": "ThunderAgent",
+      "type": "multi-turn",
+      "num_sessions": 30,
+      "turns_per_session": 3,
+      "total_requests": 90,
+      "successful": 90,
+      "failed": 0,
+      "success_rate": 100.0,
+      "wall_time_s": 29.64,
+      "throughput_rps": 3.04,
+      "total_tokens": 23040,
+      "cluster_tps": 777.3,
+      "avg_ttft_ms": 378.0,
+      "p50_ttft_ms": 309.6,
+      "p99_ttft_ms": 1023.1,
+      "avg_e2e_s": 2.58,
+      "avg_tps": 100.2,
+      "per_turn": {
+        "turn_0": {
+          "count": 30,
+          "avg_ttft_ms": 472.1,
+          "p50_ttft_ms": 310.1,
+          "p99_ttft_ms": 1023.1,
+          "avg_tps": 99.6,
+          "avg_e2e_s": 2.59
+        },
+        "turn_1": {
+          "count": 30,
+          "avg_ttft_ms": 348.4,
+          "p50_ttft_ms": 332.8,
+          "p99_ttft_ms": 702.1,
+          "avg_tps": 101.4,
+          "avg_e2e_s": 2.55
+        },
+        "turn_2": {
+          "count": 30,
+          "avg_ttft_ms": 313.4,
+          "p50_ttft_ms": 303.9,
+          "p99_ttft_ms": 383.7,
+          "avg_tps": 99.6,
+          "avg_e2e_s": 2.6
+        }
+      },
+      "per_session": {
+        "num_complete": 30,
+        "avg_session_s": 7.75,
+        "p50_session_s": 7.78,
+        "p99_session_s": 8.58
+      }
+    },
+    "kvrouter": {
+      "label": "KvRouter",
+      "type": "multi-turn",
+      "num_sessions": 30,
+      "turns_per_session": 3,
+      "total_requests": 90,
+      "successful": 90,
+      "failed": 0,
+      "success_rate": 100.0,
+      "wall_time_s": 28.34,
+      "throughput_rps": 3.18,
+      "total_tokens": 23040,
+      "cluster_tps": 813.0,
+      "avg_ttft_ms": 356.5,
+      "p50_ttft_ms": 303.5,
+      "p99_ttft_ms": 858.2,
+      "avg_e2e_s": 2.45,
+      "avg_tps": 105.1,
+      "per_turn": {
+        "turn_0": {
+          "count": 30,
+          "avg_ttft_ms": 451.5,
+          "p50_ttft_ms": 308.0,
+          "p99_ttft_ms": 858.2,
+          "avg_tps": 102.1,
+          "avg_e2e_s": 2.53
+        },
+        "turn_1": {
+          "count": 30,
+          "avg_ttft_ms": 312.5,
+          "p50_ttft_ms": 303.1,
+          "p99_ttft_ms": 495.8,
+          "avg_tps": 106.3,
+          "avg_e2e_s": 2.41
+        },
+        "turn_2": {
+          "count": 30,
+          "avg_ttft_ms": 305.4,
+          "p50_ttft_ms": 303.4,
+          "p99_ttft_ms": 364.8,
+          "avg_tps": 106.9,
+          "avg_e2e_s": 2.4
+        }
+      },
+      "per_session": {
+        "num_complete": 30,
+        "avg_session_s": 7.34,
+        "p50_session_s": 7.28,
+        "p99_session_s": 8.06
+      }
+    }
+  },
+  "high_contention": {
+    "thunderagent": {
+      "label": "ThunderAgent",
+      "type": "high-contention",
+      "num_sessions": 45,
+      "turns_per_session": 3,
+      "concurrency": 16,
+      "total_requests": 135,
+      "successful": 135,
+      "failed": 0,
+      "success_rate": 100.0,
+      "wall_time_s": 27.7,
+      "throughput_rps": 4.87,
+      "total_tokens": 34560,
+      "cluster_tps": 1247.8,
+      "avg_ttft_ms": 399.2,
+      "p50_ttft_ms": 322.2,
+      "p99_ttft_ms": 930.3,
+      "avg_e2e_s": 3.22,
+      "avg_tps": 80.5,
+      "per_turn": {
+        "turn_0": {
+          "count": 45,
+          "avg_ttft_ms": 531.5,
+          "p50_ttft_ms": 324.7,
+          "p99_ttft_ms": 1335.4,
+          "avg_tps": 81.5
+        },
+        "turn_1": {
+          "count": 45,
+          "avg_ttft_ms": 330.7,
+          "p50_ttft_ms": 328.5,
+          "p99_ttft_ms": 442.3,
+          "avg_tps": 80.1
+        },
+        "turn_2": {
+          "count": 45,
+          "avg_ttft_ms": 335.3,
+          "p50_ttft_ms": 310.9,
+          "p99_ttft_ms": 895.5,
+          "avg_tps": 79.8
+        }
+      },
+      "per_session": {
+        "num_complete": 45,
+        "completion_rate": 100.0,
+        "avg_session_s": 9.67,
+        "p50_session_s": 9.68,
+        "p99_session_s": 10.81
+      }
+    },
+    "kvrouter": {
+      "label": "KvRouter",
+      "type": "high-contention",
+      "num_sessions": 45,
+      "turns_per_session": 3,
+      "concurrency": 16,
+      "total_requests": 135,
+      "successful": 135,
+      "failed": 0,
+      "success_rate": 100.0,
+      "wall_time_s": 26.86,
+      "throughput_rps": 5.03,
+      "total_tokens": 34558,
+      "cluster_tps": 1286.6,
+      "avg_ttft_ms": 391.1,
+      "p50_ttft_ms": 316.3,
+      "p99_ttft_ms": 1352.1,
+      "avg_e2e_s": 3.02,
+      "avg_tps": 85.7,
+      "per_turn": {
+        "turn_0": {
+          "count": 45,
+          "avg_ttft_ms": 534.2,
+          "p50_ttft_ms": 316.6,
+          "p99_ttft_ms": 1352.4,
+          "avg_tps": 82.0
+        },
+        "turn_1": {
+          "count": 45,
+          "avg_ttft_ms": 319.3,
+          "p50_ttft_ms": 313.4,
+          "p99_ttft_ms": 387.0,
+          "avg_tps": 84.5
+        },
+        "turn_2": {
+          "count": 45,
+          "avg_ttft_ms": 319.9,
+          "p50_ttft_ms": 316.6,
+          "p99_ttft_ms": 376.3,
+          "avg_tps": 90.5
+        }
+      },
+      "per_session": {
+        "num_complete": 45,
+        "completion_rate": 100.0,
+        "avg_session_s": 9.06,
+        "p50_session_s": 9.1,
+        "p99_session_s": 9.81
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "timestamp": "2026-07-23T15:54:58",
+  "model": "MiniMaxAI/MiniMax-M2",
+  "config": {
+    "num_prompts": 60,
+    "concurrency": 8,
+    "max_tokens": 256
+  },
+  "single_turn": {
+    "thunderagent": {
+      "label": "ThunderAgent",
+      "type": "single-turn",
+      "successful": 60,
+      "wall_time_s": 19.48,
+      "throughput_rps": 3.08,
+      "avg_ttft_ms": 399.5,
+      "p50_ttft_ms": 301.6,
+      "p99_ttft_ms": 1094.3,
+      "avg_tps": 104.7
+    },
+    "kvrouter": {
+      "label": "KvRouter",
+      "type": "single-turn",
+      "successful": 60,
+      "wall_time_s": 19.76,
+      "throughput_rps": 3.04,
+      "avg_ttft_ms": 389.7,
+      "p50_ttft_ms": 298.1,
+      "p99_ttft_ms": 915.5,
+      "avg_tps": 103.5
+    }
+  },
+  "multi_turn": {
+    "thunderagent": {
+      "label": "ThunderAgent",
+      "type": "multi-turn",
+      "num_sessions": 20,
+      "turns_per_session": 3,
+      "total_requests": 60,
+      "successful": 60,
+      "wall_time_s": 20.53,
+      "throughput_rps": 2.92,
+      "avg_ttft_ms": 412.4,
+      "p50_ttft_ms": 296.4,
+      "p99_ttft_ms": 1616.2,
+      "avg_tps": 100.1,
+      "per_turn": {
+        "turn_0": {
+          "count": 20,
+          "avg_ttft_ms": 642.8,
+          "p50_ttft_ms": 298.4,
+          "avg_tps": 96.8
+        },
+        "turn_1": {
+          "count": 20,
+          "avg_ttft_ms": 296.8,
+          "p50_ttft_ms": 296.2,
+          "avg_tps": 100.2
+        },
+        "turn_2": {
+          "count": 20,
+          "avg_ttft_ms": 297.6,
+          "p50_ttft_ms": 296.2,
+          "avg_tps": 103.3
+        }
+      }
+    },
+    "kvrouter": {
+      "label": "KvRouter",
+      "type": "multi-turn",
+      "num_sessions": 20,
+      "turns_per_session": 3,
+      "total_requests": 60,
+      "successful": 60,
+      "wall_time_s": 20.68,
+      "throughput_rps": 2.9,
+      "avg_ttft_ms": 447.3,
+      "p50_ttft_ms": 316.7,
+      "p99_ttft_ms": 1389.7,
+      "avg_tps": 100.0,
+      "per_turn": {
+        "turn_0": {
+          "count": 20,
+          "avg_ttft_ms": 685.0,
+          "p50_ttft_ms": 371.1,
+          "avg_tps": 89.3
+        },
+        "turn_1": {
+          "count": 20,
+          "avg_ttft_ms": 347.8,
+          "p50_ttft_ms": 312.8,
+          "avg_tps": 104.5
+        },
+        "turn_2": {
+          "count": 20,
+          "avg_ttft_ms": 309.2,
+          "p50_ttft_ms": 303.8,
+          "avg_tps": 106.1
+        }
+      }
+    }
+  }
+}
